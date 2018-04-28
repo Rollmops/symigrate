@@ -23,4 +23,4 @@ class Migration:
         self.execution_result = execution_result
 
     def get_status_as_string(self):
-        return ",".join(self.status)
+        return ", ".join(self.status)

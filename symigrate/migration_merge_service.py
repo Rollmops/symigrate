@@ -22,7 +22,7 @@ class MigrationMergeService:
 
     @staticmethod
     def _check_missing_migration_script(
-            merged_migrations: List[Migration], migrations: List[Migration]) -> List[Migration]:
+            merged_migrations: List[Migration], migrations: List[Migration]):
         for merged_migration in merged_migrations:
             if MigrationMergeService._find_by_version(merged_migration.version, migrations) is None:
                 merged_migration.status.append(MigrationStatus.MISSING_MIGRATION_SCRIPT)
