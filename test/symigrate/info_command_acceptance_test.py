@@ -3,7 +3,7 @@ import sqlite3
 import unittest
 from io import StringIO
 
-from symigrate.main.system_migrate import CommandlineParsePhase, InterfaceCreationPhase, MainPhase
+from symigrate.main.symigrate import CommandlineParsePhase, InterfaceCreationPhase, MainPhase
 
 
 class InfoCommandAcceptanceTestCase(unittest.TestCase):
@@ -23,13 +23,14 @@ class InfoCommandAcceptanceTestCase(unittest.TestCase):
         commandline_parse_phase.start(["--migration-path", self.migrations_path, "info"])
 
         expected_output = (
-            "+---------+-----------+-------------------+----------+\n"
-            "| Scope   | Version   | Description       | Status   |\n"
-            "+=========+===========+===================+==========+\n"
-            "| DEFAULT | 1.0.0     | test migration    | PENDING  |\n"
-            "+---------+-----------+-------------------+----------+\n"
-            "| DEFAULT | 1.1.0     | another migration | PENDING  |\n"
-            "+---------+-----------+-------------------+----------+\n"
+            "Scope: DEFAULT\n"
+            "+-----------+-------------------+----------+\n"
+            "| Version   | Description       | Status   |\n"
+            "+===========+===================+==========+\n"
+            "| 1.0.0     | test migration    | PENDING  |\n"
+            "+-----------+-------------------+----------+\n"
+            "| 1.1.0     | another migration | PENDING  |\n"
+            "+-----------+-------------------+----------+\n"
         )
 
         self.assertEqual(expected_output, self.out_stream.getvalue())
@@ -40,13 +41,14 @@ class InfoCommandAcceptanceTestCase(unittest.TestCase):
         commandline_parse_phase.start(["--migration-path", self.migrations_path, "--scope", "my_scope", "info"])
 
         expected_output = (
-            "+----------+-----------+-------------------+----------+\n"
-            "| Scope    | Version   | Description       | Status   |\n"
-            "+==========+===========+===================+==========+\n"
-            "| my_scope | 1.0.0     | test migration    | PENDING  |\n"
-            "+----------+-----------+-------------------+----------+\n"
-            "| my_scope | 1.1.0     | another migration | PENDING  |\n"
-            "+----------+-----------+-------------------+----------+\n"
+            "Scope: my_scope\n"
+            "+-----------+-------------------+----------+\n"
+            "| Version   | Description       | Status   |\n"
+            "+===========+===================+==========+\n"
+            "| 1.0.0     | test migration    | PENDING  |\n"
+            "+-----------+-------------------+----------+\n"
+            "| 1.1.0     | another migration | PENDING  |\n"
+            "+-----------+-------------------+----------+\n"
         )
 
         self.assertEqual(expected_output, self.out_stream.getvalue())

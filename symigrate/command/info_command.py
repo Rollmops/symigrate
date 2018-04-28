@@ -33,11 +33,12 @@ class InfoCommand:
         merged_migrations = self.migration_merge_service.merge(migrations, executed_migrations)
 
         table = [self._get_table_row_from_migration(migration) for migration in merged_migrations]
-        header = ["Scope", "Version", "Description", "Status"]
+        header = ["Version", "Description", "Status"]
 
+        self.out_stream.write("Scope: {scope}\n".format(scope=self.scope))
         self.out_stream.write(tabulate(table, header, "grid"))
         self.out_stream.write("\n")
 
     @staticmethod
     def _get_table_row_from_migration(migration: Migration) -> list:
-        return [migration.scope, migration.version, migration.description, migration.status]
+        return [migration.version, migration.description, migration.status]
