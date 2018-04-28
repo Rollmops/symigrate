@@ -1,10 +1,10 @@
 from datetime import datetime
 from sqlite3 import Connection
 
-from system_migrate.migration import Migration
+from system_migrate.executed_migration import ExecutedMigration
 
 
-class MigrationRepository:
+class ExecutedMigrationRepository:
     TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
     def __init__(self, database_connection: Connection):
@@ -28,7 +28,7 @@ class MigrationRepository:
         if not self._schema_exists():
             self._create_schema()
 
-    def push(self, migration: Migration):
+    def push(self, migration: ExecutedMigration):
         self.database_connection.execute(
             "INSERT INTO migration "
             "(id, version, description, timestamp, status, checksum, stdout, stderr, scope, script) "
@@ -36,7 +36,7 @@ class MigrationRepository:
                 migration.id,
                 migration.version,
                 migration.description,
-                migration.timestamp.strftime(MigrationRepository.TIMESTAMP_FORMAT),
+                migration.timestamp.strftime(ExecutedMigrationRepository.TIMESTAMP_FORMAT),
                 migration.status,
                 migration.checksum,
                 migration.stdout,
@@ -49,19 +49,20 @@ class MigrationRepository:
 
         self.database_connection.commit()
 
-    def find_by_id(self, id: str) -> Migration:
+    def find_by_id(self, id: str) -> ExecutedMigration:
         row = self.database_connection.execute(
             "SELECT version, description, timestamp, status, checksum, stdout, stderr, scope, script FROM migration"
         ).fetchone()
 
         if not row:
-            raise MigrationRepository.MigrationNotFoundException("Unable to find migration for id '{id}'".format(id=id))
+            raise ExecutedMigrationRepository.MigrationNotFoundException(
+                "Unable to find migration for id '{id}'".format(id=id))
 
-        migration = Migration(
+        migration = ExecutedMigration(
             id=id,
             version=row[0],
             description=row[1],
-            timestamp=datetime.strptime(row[2], MigrationRepository.TIMESTAMP_FORMAT),
+            timestamp=datetime.strptime(row[2], ExecutedMigrationRepository.TIMESTAMP_FORMAT),
             status=row[3],
             checksum=row[4],
             stdout=row[5],
