@@ -14,6 +14,9 @@ class CommandlineParserCreator:
             "--db-path", help="The path to the migration database file (default: %(default)s)",
             default=CommandlineParserCreator._get_default_database_path()
         )
+        parser.add_argument(
+            "--scope", help="The migration scope (default: %(default)s)", default="DEFAULT"
+        )
         subparsers = parser.add_subparsers(dest="command")
 
         info_parser = subparsers.add_parser("info", help="Show migration info")

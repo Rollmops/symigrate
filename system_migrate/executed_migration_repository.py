@@ -61,6 +61,18 @@ class ExecutedMigrationRepository:
 
         return migrations
 
+    def find_by_scope(self, scope: str) -> List[ExecutedMigration]:
+        cursor = self.database_connection.execute(
+            "SELECT version, description, timestamp, status, checksum, stdout, stderr, scope, script, id "
+            "FROM migration "
+            "WHERE scope = ? "
+            "ORDER BY version", (scope,)
+        )
+
+        migrations = [self._create_executed_migration_from_row(row) for row in cursor]
+
+        return migrations
+
     @staticmethod
     def _create_executed_migration_from_row(row):
         migration = ExecutedMigration(

@@ -22,26 +22,35 @@ class CommandlineParsePhase:
 
 
 class InterfaceCreationPhase:
+    database_connection_hook = None
+
     def __init__(self, commandline_arguments: Namespace):
         self.commandline_arguments = commandline_arguments
 
     def start(self):
-        database_connection = sqlite3.connect(self.commandline_arguments.db_path).cursor().connection
+        database_connection = InterfaceCreationPhase.database_connection_hook or \
+                              sqlite3.connect(self.commandline_arguments.db_path).cursor().connection
 
         main_phase = MainPhase(database_connection, self.commandline_arguments)
         main_phase.start()
 
 
 class MainPhase:
+    out_stream_hook = None
+
     def __init__(self, database_connection: sqlite3.Connection, commandline_arguments: Namespace):
         self.commandline_arguments = commandline_arguments
 
         self.executed_migration_repository = ExecutedMigrationRepository(database_connection)
-        migration_repository = MigrationRepository(commandline_arguments.migration_path)
+        migration_repository = MigrationRepository(commandline_arguments.migration_path, commandline_arguments.scope)
         migration_merge_service = MigrationMergeService()
 
         self.info_command = InfoCommand(
-            self.executed_migration_repository, migration_repository, migration_merge_service
+            self.executed_migration_repository,
+            migration_repository,
+            migration_merge_service,
+            commandline_arguments.scope,
+            out_stream=MainPhase.out_stream_hook
         )
 
     def start(self):

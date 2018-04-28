@@ -9,8 +9,9 @@ from system_migrate.migration import Migration
 class MigrationRepository:
     ENCODING = "utf-8"
 
-    def __init__(self, path: str):
+    def __init__(self, path: str, scope: str = "DEFAULT"):
         self.path = path
+        self.scope = scope
         self._regex = re.compile(r"^V(\S+)__(\S+)\.sh")
 
     def find_all(self) -> List[Migration]:
@@ -32,7 +33,8 @@ class MigrationRepository:
             description=regex_match.group(2).replace("_", " "),
             status="PENDING",
             checksum=self._calculate_checksum(migration_script_content),
-            script=migration_script_content
+            script=migration_script_content,
+            scope=self.scope
         )
         return migration
 

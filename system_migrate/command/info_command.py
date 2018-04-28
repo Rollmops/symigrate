@@ -17,15 +17,17 @@ class InfoCommand:
             executed_migration_repository: ExecutedMigrationRepository,
             migration_repository: MigrationRepository,
             migration_merge_service: MigrationMergeService,
+            scope: str = "DEFAULT",
             out_stream=sys.stdout
     ):
         self.executed_migration_repository = executed_migration_repository
         self.migration_repository = migration_repository
         self.migration_merge_service = migration_merge_service
+        self.scope = scope
         self.out_stream = out_stream
 
     def run(self):
-        executed_migrations = self.executed_migration_repository.find_all()
+        executed_migrations = self.executed_migration_repository.find_by_scope(self.scope)
         migrations = self.migration_repository.find_all()
 
         merged_migrations = self.migration_merge_service.merge(migrations, executed_migrations)
