@@ -3,7 +3,7 @@ import sqlite3
 import unittest
 from io import StringIO
 
-from system_migrate.main.system_migrate import CommandlineParsePhase, InterfaceCreationPhase, MainPhase
+from symigrate.main.system_migrate import CommandlineParsePhase, InterfaceCreationPhase, MainPhase
 
 
 class InfoCommandAcceptanceTestCase(unittest.TestCase):

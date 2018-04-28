@@ -1,4 +1,4 @@
-from system_migrate.migration_execution_result import MigrationExecutionResult
+from symigrate.migration_execution_result import MigrationExecutionResult
 
 
 class Migration:

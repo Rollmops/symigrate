@@ -2,8 +2,8 @@ from datetime import datetime
 from sqlite3 import Connection
 from typing import List
 
-from system_migrate.migration import Migration
-from system_migrate.migration_execution_result import MigrationExecutionResult
+from symigrate.migration import Migration
+from symigrate.migration_execution_result import MigrationExecutionResult
 
 
 class ExecutedMigrationRepository:

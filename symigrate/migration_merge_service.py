@@ -1,6 +1,6 @@
 from typing import List
 
-from system_migrate.migration import Migration
+from symigrate.migration import Migration
 
 
 class MigrationMergeService:

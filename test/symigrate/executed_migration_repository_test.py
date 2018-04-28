@@ -2,9 +2,9 @@ import sqlite3
 import unittest
 from datetime import datetime
 
-from system_migrate.executed_migration_repository import ExecutedMigrationRepository
-from system_migrate.migration import Migration
-from system_migrate.migration_execution_result import MigrationExecutionResult
+from symigrate.executed_migration_repository import ExecutedMigrationRepository
+from symigrate.migration import Migration
+from symigrate.migration_execution_result import MigrationExecutionResult
 
 
 class ExecutedMigrationRepositoryTestCase(unittest.TestCase):

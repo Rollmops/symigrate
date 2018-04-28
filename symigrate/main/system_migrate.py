@@ -2,11 +2,11 @@ import sqlite3
 import sys
 from argparse import Namespace
 
-from system_migrate.command.info_command import InfoCommand
-from system_migrate.commandline_parser_creator import CommandlineParserCreator
-from system_migrate.executed_migration_repository import ExecutedMigrationRepository
-from system_migrate.migration_merge_service import MigrationMergeService
-from system_migrate.migration_repository import MigrationRepository
+from symigrate.command.info_command import InfoCommand
+from symigrate.commandline_parser_creator import CommandlineParserCreator
+from symigrate.executed_migration_repository import ExecutedMigrationRepository
+from symigrate.migration_merge_service import MigrationMergeService
+from symigrate.migration_repository import MigrationRepository
 
 
 class CommandlineParsePhase:

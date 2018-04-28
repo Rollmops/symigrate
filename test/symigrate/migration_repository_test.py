@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from system_migrate.migration_repository import MigrationRepository
+from symigrate.migration_repository import MigrationRepository
 
 
 class MigrationRepositoryTestCase(unittest.TestCase):

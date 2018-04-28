@@ -3,10 +3,10 @@ import sys
 
 from tabulate import tabulate
 
-from system_migrate.executed_migration_repository import ExecutedMigrationRepository
-from system_migrate.migration import Migration
-from system_migrate.migration_merge_service import MigrationMergeService
-from system_migrate.migration_repository import MigrationRepository
+from symigrate.executed_migration_repository import ExecutedMigrationRepository
+from symigrate.migration import Migration
+from symigrate.migration_merge_service import MigrationMergeService
+from symigrate.migration_repository import MigrationRepository
 
 LOGGER = logging.getLogger(__name__)
 

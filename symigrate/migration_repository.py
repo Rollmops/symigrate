@@ -3,8 +3,8 @@ import os
 import re
 from typing import List
 
-from system_migrate.migration import Migration
-from system_migrate.migration_status import MigrationStatus
+from symigrate.migration import Migration
+from symigrate.migration_status import MigrationStatus
 
 
 class MigrationRepository:
