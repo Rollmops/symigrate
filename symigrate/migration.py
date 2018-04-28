@@ -10,6 +10,7 @@ class Migration:
             description: str,
             checksum: str,
             script: str,
+            filename: str,
             status: List[str] = None,
             scope: str = "DEFAULT",
             execution_result: MigrationExecutionResult = None
@@ -19,6 +20,7 @@ class Migration:
         self.status = status or [MigrationStatus.PENDING]
         self.checksum = checksum
         self.script = script
+        self.filename = filename
         self.scope = scope
         self.execution_result = execution_result
 

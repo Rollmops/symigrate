@@ -26,14 +26,16 @@ class MigrationRepository:
                 yield regex_match
 
     def _create_migration(self, regex_match):
-        file_path = os.path.join(self.path, regex_match.group(0))
+        filename = regex_match.group(0)
+        file_path = os.path.join(self.path, filename)
         migration_script_content = self._get_script_content(file_path)
         migration = Migration(
             version=regex_match.group(1),
             description=regex_match.group(2).replace("_", " "),
             checksum=self._calculate_checksum(migration_script_content),
             script=migration_script_content,
-            scope=self.scope
+            scope=self.scope,
+            filename=filename
         )
         return migration
 

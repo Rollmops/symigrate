@@ -8,9 +8,9 @@ from symigrate.migration_status import MigrationStatus
 class MigrationMergeServiceTestCase(unittest.TestCase):
     def test_all_pending(self):
         migrations = [
-            Migration("1.0.0", None, None, None),
-            Migration("1.2.0", None, None, None),
-            Migration("1.3.0", None, None, None),
+            Migration("1.0.0", None, None, None, None),
+            Migration("1.2.0", None, None, None, None),
+            Migration("1.3.0", None, None, None, None),
         ]
         executed_migrations = []
 
@@ -23,12 +23,12 @@ class MigrationMergeServiceTestCase(unittest.TestCase):
 
     def test_first_migration_was_executed(self):
         migrations = [
-            Migration("1.0.0", None, None, None),
-            Migration("1.2.0", None, None, None),
-            Migration("1.3.0", None, None, None),
+            Migration("1.0.0", None, None, None, None),
+            Migration("1.2.0", None, None, None, None),
+            Migration("1.3.0", None, None, None, None),
         ]
         executed_migrations = [
-            Migration("1.0.0", None, None, None, status=[MigrationStatus.SUCCESS])
+            Migration("1.0.0", None, None, None, None, status=[MigrationStatus.SUCCESS])
         ]
 
         merged_migrations = MigrationMergeService().merge(migrations, executed_migrations)
@@ -41,14 +41,14 @@ class MigrationMergeServiceTestCase(unittest.TestCase):
 
     def test_all_migrations_were_executed(self):
         migrations = [
-            Migration("1.0.0", None, None, None),
-            Migration("1.2.0", None, None, None),
-            Migration("1.3.0", None, None, None),
+            Migration("1.0.0", None, None, None, None),
+            Migration("1.2.0", None, None, None, None),
+            Migration("1.3.0", None, None, None, None),
         ]
         executed_migrations = [
-            Migration("1.0.0", None, None, None, status=[MigrationStatus.SUCCESS]),
-            Migration("1.2.0", None, None, None, status=[MigrationStatus.SUCCESS]),
-            Migration("1.3.0", None, None, None, status=[MigrationStatus.FAILED])
+            Migration("1.0.0", None, None, None, None, status=[MigrationStatus.SUCCESS]),
+            Migration("1.2.0", None, None, None, None, status=[MigrationStatus.SUCCESS]),
+            Migration("1.3.0", None, None, None, None, status=[MigrationStatus.FAILED])
         ]
 
         merged_migrations = MigrationMergeService().merge(migrations, executed_migrations)
@@ -61,13 +61,13 @@ class MigrationMergeServiceTestCase(unittest.TestCase):
 
     def test_missing_migration_script(self):
         migrations = [
-            Migration("1.0.0", None, None, None),
-            Migration("1.2.0", None, None, None),
+            Migration("1.0.0", None, None, None, None),
+            Migration("1.2.0", None, None, None, None),
         ]
         executed_migrations = [
-            Migration("1.0.0", None, None, None, status=[MigrationStatus.SUCCESS]),
-            Migration("1.2.0", None, None, None, status=[MigrationStatus.SUCCESS]),
-            Migration("1.3.0", None, None, None, status=[MigrationStatus.FAILED])
+            Migration("1.0.0", None, None, None, None, status=[MigrationStatus.SUCCESS]),
+            Migration("1.2.0", None, None, None, None, status=[MigrationStatus.SUCCESS]),
+            Migration("1.3.0", None, None, None, None, status=[MigrationStatus.FAILED])
         ]
 
         merged_migrations = MigrationMergeService().merge(migrations, executed_migrations)
@@ -82,12 +82,12 @@ class MigrationMergeServiceTestCase(unittest.TestCase):
 
     def test_incorrect_checksum(self):
         migrations = [
-            Migration("1.0.0", None, "1234", None),
-            Migration("1.2.0", None, None, None),
+            Migration("1.0.0", None, "1234", None, None),
+            Migration("1.2.0", None, None, None, None),
         ]
         executed_migrations = [
-            Migration("1.0.0", None, "4321", None, status=[MigrationStatus.SUCCESS]),
-            Migration("1.2.0", None, None, None, status=[MigrationStatus.SUCCESS]),
+            Migration("1.0.0", None, "4321", None, None, status=[MigrationStatus.SUCCESS]),
+            Migration("1.2.0", None, None, None, None, status=[MigrationStatus.SUCCESS]),
         ]
 
         merged_migrations = MigrationMergeService().merge(migrations, executed_migrations)

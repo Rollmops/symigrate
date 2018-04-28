@@ -23,8 +23,11 @@ class ExecutedMigrationRepositoryTestCase(unittest.TestCase):
     def test_push(self):
         migration = Migration(
             "1.2.3", "some description",
-            status=[MigrationStatus.SUCCESS], checksum="1234", script="echo 'huhu'",
-            execution_result=MigrationExecutionResult(stdout="stdout output", stderr="error output")
+            status=[MigrationStatus.SUCCESS],
+            checksum="1234",
+            script="echo 'huhu'",
+            execution_result=MigrationExecutionResult(stdout="stdout output", stderr="error output"),
+            filename="V1.2.3__some_description.sh"
         )
 
         self.executed_migration_repository.init()
@@ -53,9 +56,10 @@ class ExecutedMigrationRepositoryTestCase(unittest.TestCase):
             execution_result=MigrationExecutionResult(
                 execution_timestamp=datetime(2018, 4, 28, 15, 48),
                 stdout="stdout output",
-                stderr="error output"
+                stderr="error output",
             ),
-            status=[MigrationStatus.SUCCESS], checksum="1234", script="echo 'huhu'"
+            status=[MigrationStatus.SUCCESS], checksum="1234", script="echo 'huhu'",
+            filename="V1.2.3__some_description.sh"
         )
 
         self.executed_migration_repository.init()
