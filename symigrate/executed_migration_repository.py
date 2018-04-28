@@ -38,7 +38,7 @@ class ExecutedMigrationRepository:
                 migration.version,
                 migration.description,
                 migration.execution_result.execution_timestamp.strftime(ExecutedMigrationRepository.TIMESTAMP_FORMAT),
-                migration.status,
+                migration.get_status_as_string(),
                 migration.checksum,
                 migration.execution_result.stdout,
                 migration.execution_result.stderr,
@@ -84,7 +84,7 @@ class ExecutedMigrationRepository:
         migration = Migration(
             version=row[0],
             description=row[1],
-            status=row[3],
+            status=row[3].split(","),
             checksum=row[4],
             scope=row[7],
             script=row[8],

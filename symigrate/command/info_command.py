@@ -41,4 +41,4 @@ class InfoCommand:
 
     @staticmethod
     def _get_table_row_from_migration(migration: Migration) -> list:
-        return [migration.version, migration.description, migration.status]
+        return [migration.version, migration.description, migration.get_status_as_string()]

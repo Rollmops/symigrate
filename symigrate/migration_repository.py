@@ -4,7 +4,6 @@ import re
 from typing import List
 
 from symigrate.migration import Migration
-from symigrate.migration_status import MigrationStatus
 
 
 class MigrationRepository:
@@ -32,7 +31,6 @@ class MigrationRepository:
         migration = Migration(
             version=regex_match.group(1),
             description=regex_match.group(2).replace("_", " "),
-            status=MigrationStatus.PENDING,
             checksum=self._calculate_checksum(migration_script_content),
             script=migration_script_content,
             scope=self.scope

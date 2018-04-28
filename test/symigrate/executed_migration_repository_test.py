@@ -5,6 +5,7 @@ from datetime import datetime
 from symigrate.executed_migration_repository import ExecutedMigrationRepository
 from symigrate.migration import Migration
 from symigrate.migration_execution_result import MigrationExecutionResult
+from symigrate.migration_status import MigrationStatus
 
 
 class ExecutedMigrationRepositoryTestCase(unittest.TestCase):
@@ -22,7 +23,7 @@ class ExecutedMigrationRepositoryTestCase(unittest.TestCase):
     def test_push(self):
         migration = Migration(
             "1.2.3", "some description",
-            status="SUCCESS", checksum="1234", script="echo 'huhu'",
+            status=[MigrationStatus.SUCCESS], checksum="1234", script="echo 'huhu'",
             execution_result=MigrationExecutionResult(stdout="stdout output", stderr="error output")
         )
 
@@ -54,7 +55,7 @@ class ExecutedMigrationRepositoryTestCase(unittest.TestCase):
                 stdout="stdout output",
                 stderr="error output"
             ),
-            status="SUCCESS", checksum="1234", script="echo 'huhu'"
+            status=[MigrationStatus.SUCCESS], checksum="1234", script="echo 'huhu'"
         )
 
         self.executed_migration_repository.init()
@@ -66,7 +67,7 @@ class ExecutedMigrationRepositoryTestCase(unittest.TestCase):
         self.assertEqual("1.2.3", stored_migration.version)
         self.assertEqual("some description", stored_migration.description)
         self.assertEqual(datetime(2018, 4, 28, 15, 48), stored_migration.execution_result.execution_timestamp)
-        self.assertEqual("SUCCESS", stored_migration.status)
+        self.assertEqual("SUCCESS", stored_migration.get_status_as_string())
         self.assertEqual("stdout output", stored_migration.execution_result.stdout)
         self.assertEqual("error output", stored_migration.execution_result.stderr)
         self.assertEqual("1234", stored_migration.checksum)
