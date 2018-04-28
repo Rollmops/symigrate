@@ -1,5 +1,6 @@
 from datetime import datetime
 from sqlite3 import Connection
+from typing import List
 
 from system_migrate.executed_migration import ExecutedMigration
 
@@ -18,11 +19,11 @@ class ExecutedMigrationRepository:
         """)
 
     def _schema_exists(self) -> bool:
-        cursor = self.database_connection.execute(
+        row = self.database_connection.execute(
             "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='migration'"
-        )
+        ).fetchone()
 
-        return cursor.rowcount > 0
+        return int(row[0]) > 0
 
     def init(self):
         if not self._schema_exists():
@@ -49,17 +50,21 @@ class ExecutedMigrationRepository:
 
         self.database_connection.commit()
 
-    def find_by_id(self, id: str) -> ExecutedMigration:
-        row = self.database_connection.execute(
-            "SELECT version, description, timestamp, status, checksum, stdout, stderr, scope, script FROM migration"
-        ).fetchone()
+    def find_all(self) -> List[ExecutedMigration]:
+        cursor = self.database_connection.execute(
+            "SELECT version, description, timestamp, status, checksum, stdout, stderr, scope, script, id "
+            "FROM migration "
+            "ORDER BY version"
+        )
 
-        if not row:
-            raise ExecutedMigrationRepository.MigrationNotFoundException(
-                "Unable to find migration for id '{id}'".format(id=id))
+        migrations = [self._create_executed_migration_from_row(row) for row in cursor]
 
+        return migrations
+
+    @staticmethod
+    def _create_executed_migration_from_row(row):
         migration = ExecutedMigration(
-            id=id,
+            id=row[9],
             version=row[0],
             description=row[1],
             timestamp=datetime.strptime(row[2], ExecutedMigrationRepository.TIMESTAMP_FORMAT),
@@ -70,8 +75,4 @@ class ExecutedMigrationRepository:
             scope=row[7],
             script=row[8]
         )
-
         return migration
-
-    class MigrationNotFoundException(Exception):
-        pass

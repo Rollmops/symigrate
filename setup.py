@@ -9,5 +9,8 @@ setup(name="system_migrate",
           "console_scripts": [
               "system-migrate=system_migrate.main.system_migrate:main"
           ]
-      }
+      },
+      install_requires=[
+          "tabulate"
+      ]
       )

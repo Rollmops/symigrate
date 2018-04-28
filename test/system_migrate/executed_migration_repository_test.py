@@ -43,15 +43,17 @@ class ExecutedMigrationRepositoryTestCase(unittest.TestCase):
         self.assertEqual("DEFAULT", row[7])
         self.assertEqual("echo 'huhu'", row[8])
 
-    def test_find_by_id(self):
+    def test_find_all(self):
         migration = ExecutedMigration(
             version="1.2.3", description="some description", id="1", timestamp=datetime(2018, 4, 28, 15, 48),
-            status="SUCCESS", stdout="stdout output", stderr="error output", checksum="1234", script="echo 'huhu'")
+            status="SUCCESS", stdout="stdout output", stderr="error output", checksum="1234", script="echo 'huhu'"
+        )
 
         self.executed_migration_repository.init()
         self.executed_migration_repository.push(migration)
 
-        stored_migration = self.executed_migration_repository.find_by_id("1")
+        stored_migrations = self.executed_migration_repository.find_all()
+        stored_migration = stored_migrations[0]
 
         self.assertEqual("1.2.3", stored_migration.version)
         self.assertEqual("some description", stored_migration.description)
