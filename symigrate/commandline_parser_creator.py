@@ -8,14 +8,19 @@ class CommandlineParserCreator:
     def create():
         parser = ArgumentParser()
         parser.add_argument(
-            "--migration-path", help="Migration directory path (default: %(default)s)", default=os.getcwd()
+            "--migration-path",
+            help="Migration directory path (default: %(default)s)",
+            default=os.environ.get("SYMIGRATE_MIGRATION_PATH", os.getcwd())
         )
         parser.add_argument(
-            "--db-path", help="The path to the migration database file (default: %(default)s)",
-            default=CommandlineParserCreator._get_default_database_path()
+            "--db-file-path",
+            help="The path to the migration database file (default: %(default)s)",
+            default=os.environ.get("SYMIGRATE_DB_FILE_PATH", CommandlineParserCreator._get_default_database_path())
         )
         parser.add_argument(
-            "--scope", help="The migration scope (default: %(default)s)", default="DEFAULT"
+            "--scope",
+            help="The migration scope (default: %(default)s)",
+            default=os.environ.get("SYMIGRATE_SCOPE", "DEFAULT")
         )
         subparsers = parser.add_subparsers(dest="command")
 
@@ -26,4 +31,4 @@ class CommandlineParserCreator:
     @staticmethod
     def _get_default_database_path():
         home_path = os.environ.get("HOME", os.getcwd())
-        return os.path.join(home_path, ".migration.db")
+        return os.path.join(home_path, ".symigrate.db")
