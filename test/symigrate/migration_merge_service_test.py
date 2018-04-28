@@ -79,3 +79,18 @@ class MigrationMergeServiceTestCase(unittest.TestCase):
         self.assertEqual(
             [MigrationStatus.FAILED, MigrationStatus.MISSING_MIGRATION_SCRIPT], merged_migrations[2].status
         )
+
+    def test_incorrect_checksum(self):
+        migrations = [
+            Migration("1.0.0", None, "1234", None),
+            Migration("1.2.0", None, None, None),
+        ]
+        executed_migrations = [
+            Migration("1.0.0", None, "4321", None, status=[MigrationStatus.SUCCESS]),
+            Migration("1.2.0", None, None, None, status=[MigrationStatus.SUCCESS]),
+        ]
+
+        merged_migrations = MigrationMergeService().merge(migrations, executed_migrations)
+
+        self.assertEqual(2, len(merged_migrations))
+        self.assertEqual([MigrationStatus.SUCCESS, MigrationStatus.CHECKSUM_MISMATCH], merged_migrations[0].status)

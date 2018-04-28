@@ -17,15 +17,17 @@ class MigrationMergeService:
             residual_migrations = migrations
 
         merged_migrations.extend(residual_migrations)
-        MigrationMergeService._check_missing_migration_script(merged_migrations, migrations)
+        MigrationMergeService._update_migration_status(merged_migrations, migrations)
         return merged_migrations
 
     @staticmethod
-    def _check_missing_migration_script(
-            merged_migrations: List[Migration], migrations: List[Migration]):
+    def _update_migration_status(merged_migrations: List[Migration], migrations: List[Migration]):
         for merged_migration in merged_migrations:
-            if MigrationMergeService._find_by_version(merged_migration.version, migrations) is None:
+            migration = MigrationMergeService._find_by_version(merged_migration.version, migrations)
+            if migration is None:
                 merged_migration.status.append(MigrationStatus.MISSING_MIGRATION_SCRIPT)
+            elif migration.checksum != merged_migration.checksum:
+                merged_migration.status.append(MigrationStatus.CHECKSUM_MISMATCH)
 
     @staticmethod
     def _find_by_version(version: str, migrations: List[Migration]):
