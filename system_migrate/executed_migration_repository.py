@@ -2,7 +2,8 @@ from datetime import datetime
 from sqlite3 import Connection
 from typing import List
 
-from system_migrate.executed_migration import ExecutedMigration
+from system_migrate.migration import Migration
+from system_migrate.migration_execution_result import MigrationExecutionResult
 
 
 class ExecutedMigrationRepository:
@@ -14,7 +15,7 @@ class ExecutedMigrationRepository:
     def _create_schema(self):
         self.database_connection.execute("""
         CREATE TABLE migration 
-        (id TEXT, version TEXT, description TEXT, timestamp TEXT, status TEXT, 
+        (version TEXT, description TEXT, timestamp TEXT, status TEXT, 
         checksum TEXT, stdout TEXT, stderr TEXT, scope TEXT, script TEXT)
         """)
 
@@ -29,19 +30,18 @@ class ExecutedMigrationRepository:
         if not self._schema_exists():
             self._create_schema()
 
-    def push(self, migration: ExecutedMigration):
+    def push(self, migration: Migration):
         self.database_connection.execute(
             "INSERT INTO migration "
-            "(id, version, description, timestamp, status, checksum, stdout, stderr, scope, script) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (
-                migration.id,
+            "(version, description, timestamp, status, checksum, stdout, stderr, scope, script) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (
                 migration.version,
                 migration.description,
-                migration.timestamp.strftime(ExecutedMigrationRepository.TIMESTAMP_FORMAT),
+                migration.execution_result.execution_timestamp.strftime(ExecutedMigrationRepository.TIMESTAMP_FORMAT),
                 migration.status,
                 migration.checksum,
-                migration.stdout,
-                migration.stderr,
+                migration.execution_result.stdout,
+                migration.execution_result.stderr,
                 migration.scope,
                 migration.script
 
@@ -50,41 +50,44 @@ class ExecutedMigrationRepository:
 
         self.database_connection.commit()
 
-    def find_all(self) -> List[ExecutedMigration]:
+    def find_all(self) -> List[Migration]:
         cursor = self.database_connection.execute(
-            "SELECT version, description, timestamp, status, checksum, stdout, stderr, scope, script, id "
+            "SELECT version, description, timestamp, status, checksum, stdout, stderr, scope, script "
             "FROM migration "
             "ORDER BY version"
         )
 
-        migrations = [self._create_executed_migration_from_row(row) for row in cursor]
+        migrations = [self._create_migration_from_row(row) for row in cursor]
 
         return migrations
 
-    def find_by_scope(self, scope: str) -> List[ExecutedMigration]:
+    def find_by_scope(self, scope: str) -> List[Migration]:
         cursor = self.database_connection.execute(
-            "SELECT version, description, timestamp, status, checksum, stdout, stderr, scope, script, id "
+            "SELECT version, description, timestamp, status, checksum, stdout, stderr, scope, script "
             "FROM migration "
             "WHERE scope = ? "
             "ORDER BY version", (scope,)
         )
 
-        migrations = [self._create_executed_migration_from_row(row) for row in cursor]
+        migrations = [self._create_migration_from_row(row) for row in cursor]
 
         return migrations
 
     @staticmethod
-    def _create_executed_migration_from_row(row):
-        migration = ExecutedMigration(
-            id=row[9],
-            version=row[0],
-            description=row[1],
-            timestamp=datetime.strptime(row[2], ExecutedMigrationRepository.TIMESTAMP_FORMAT),
-            status=row[3],
-            checksum=row[4],
+    def _create_migration_from_row(row):
+        migration_execution_result = MigrationExecutionResult(
             stdout=row[5],
             stderr=row[6],
+            execution_timestamp=datetime.strptime(row[2], ExecutedMigrationRepository.TIMESTAMP_FORMAT),
+
+        )
+        migration = Migration(
+            version=row[0],
+            description=row[1],
+            status=row[3],
+            checksum=row[4],
             scope=row[7],
-            script=row[8]
+            script=row[8],
+            execution_result=migration_execution_result
         )
         return migration

@@ -2,8 +2,9 @@ import sqlite3
 import unittest
 from datetime import datetime
 
-from system_migrate.executed_migration import ExecutedMigration
 from system_migrate.executed_migration_repository import ExecutedMigrationRepository
+from system_migrate.migration import Migration
+from system_migrate.migration_execution_result import MigrationExecutionResult
 
 
 class ExecutedMigrationRepositoryTestCase(unittest.TestCase):
@@ -19,16 +20,18 @@ class ExecutedMigrationRepositoryTestCase(unittest.TestCase):
         self.assertEqual(0, len(rows))
 
     def test_push(self):
-        migration = ExecutedMigration(
+        migration = Migration(
             "1.2.3", "some description",
-            status="SUCCESS", stdout="stdout output", stderr="error output", checksum="1234", script="echo 'huhu'")
+            status="SUCCESS", checksum="1234", script="echo 'huhu'",
+            execution_result=MigrationExecutionResult(stdout="stdout output", stderr="error output")
+        )
 
         self.executed_migration_repository.init()
         self.executed_migration_repository.push(migration)
 
         rows = self.database_connection.execute(
             "SELECT version, description, status, stdout, stderr, "
-            "checksum, id, scope, script FROM migration").fetchall()
+            "checksum, scope, script FROM migration").fetchall()
 
         self.assertEqual(1, len(rows))
         row = rows[0]
@@ -39,14 +42,19 @@ class ExecutedMigrationRepositoryTestCase(unittest.TestCase):
         self.assertEqual("stdout output", row[3])
         self.assertEqual("error output", row[4])
         self.assertEqual("1234", row[5])
-        self.assertEqual(32, len(row[6]))
-        self.assertEqual("DEFAULT", row[7])
-        self.assertEqual("echo 'huhu'", row[8])
+        self.assertEqual("DEFAULT", row[6])
+        self.assertEqual("echo 'huhu'", row[7])
 
     def test_find_all(self):
-        migration = ExecutedMigration(
-            version="1.2.3", description="some description", id="1", timestamp=datetime(2018, 4, 28, 15, 48),
-            status="SUCCESS", stdout="stdout output", stderr="error output", checksum="1234", script="echo 'huhu'"
+        migration = Migration(
+            version="1.2.3",
+            description="some description",
+            execution_result=MigrationExecutionResult(
+                execution_timestamp=datetime(2018, 4, 28, 15, 48),
+                stdout="stdout output",
+                stderr="error output"
+            ),
+            status="SUCCESS", checksum="1234", script="echo 'huhu'"
         )
 
         self.executed_migration_repository.init()
@@ -57,10 +65,9 @@ class ExecutedMigrationRepositoryTestCase(unittest.TestCase):
 
         self.assertEqual("1.2.3", stored_migration.version)
         self.assertEqual("some description", stored_migration.description)
-        self.assertEqual("1", stored_migration.id)
-        self.assertEqual(datetime(2018, 4, 28, 15, 48), stored_migration.timestamp)
+        self.assertEqual(datetime(2018, 4, 28, 15, 48), stored_migration.execution_result.execution_timestamp)
         self.assertEqual("SUCCESS", stored_migration.status)
-        self.assertEqual("stdout output", stored_migration.stdout)
-        self.assertEqual("error output", stored_migration.stderr)
+        self.assertEqual("stdout output", stored_migration.execution_result.stdout)
+        self.assertEqual("error output", stored_migration.execution_result.stderr)
         self.assertEqual("1234", stored_migration.checksum)
         self.assertEqual("echo 'huhu'", stored_migration.script)

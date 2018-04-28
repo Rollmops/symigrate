@@ -4,6 +4,7 @@ import re
 from typing import List
 
 from system_migrate.migration import Migration
+from system_migrate.migration_status import MigrationStatus
 
 
 class MigrationRepository:
@@ -31,7 +32,7 @@ class MigrationRepository:
         migration = Migration(
             version=regex_match.group(1),
             description=regex_match.group(2).replace("_", " "),
-            status="PENDING",
+            status=MigrationStatus.PENDING,
             checksum=self._calculate_checksum(migration_script_content),
             script=migration_script_content,
             scope=self.scope

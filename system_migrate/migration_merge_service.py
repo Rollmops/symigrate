@@ -1,13 +1,12 @@
 from typing import List
 
-from system_migrate.executed_migration import ExecutedMigration
 from system_migrate.migration import Migration
 
 
 class MigrationMergeService:
 
     @staticmethod
-    def merge(migrations: List[Migration], executed_migrations: List[ExecutedMigration]) -> List[Migration]:
+    def merge(migrations: List[Migration], executed_migrations: List[Migration]) -> List[Migration]:
         merged_migrations = executed_migrations
 
         if executed_migrations:

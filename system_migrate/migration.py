@@ -1,4 +1,4 @@
-import uuid
+from system_migrate.migration_execution_result import MigrationExecutionResult
 
 
 class Migration:
@@ -9,7 +9,7 @@ class Migration:
             checksum: str,
             script: str,
             scope: str = "DEFAULT",
-            id: str = None
+            execution_result: MigrationExecutionResult = None
     ):
         self.version = version
         self.description = description
@@ -17,8 +17,4 @@ class Migration:
         self.checksum = checksum
         self.script = script
         self.scope = scope
-        self.id = id or self.create_uuid()
-
-    @staticmethod
-    def create_uuid():
-        return str(uuid.uuid4()).replace("-", "")
+        self.execution_result = execution_result
