@@ -50,7 +50,7 @@ class MainPhase:
             migration_repository,
             migration_merge_service,
             commandline_arguments.scope,
-            out_stream=MainPhase.out_stream_hook
+            out_stream=MainPhase.out_stream_hook or sys.stdout
         )
 
     def start(self):

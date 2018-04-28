@@ -18,13 +18,13 @@ class InfoCommand:
             migration_repository: MigrationRepository,
             migration_merge_service: MigrationMergeService,
             scope: str = "DEFAULT",
-            out_stream=sys.stdout
+            out_stream=None
     ):
         self.executed_migration_repository = executed_migration_repository
         self.migration_repository = migration_repository
         self.migration_merge_service = migration_merge_service
         self.scope = scope
-        self.out_stream = out_stream
+        self.out_stream = out_stream or sys.stdout
 
     def run(self):
         executed_migrations = self.executed_migration_repository.find_by_scope(self.scope)
