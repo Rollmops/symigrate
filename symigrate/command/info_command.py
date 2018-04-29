@@ -3,6 +3,7 @@ import sys
 
 from tabulate import tabulate
 
+from symigrate.defaults import SYMIGRATE_DEFAULT_SCOPE
 from symigrate.executed_migration_repository import ExecutedMigrationRepository
 from symigrate.migration import Migration
 from symigrate.migration_merge_service import MigrationMergeService
@@ -17,7 +18,7 @@ class InfoCommand:
             executed_migration_repository: ExecutedMigrationRepository,
             migration_repository: MigrationRepository,
             migration_merge_service: MigrationMergeService,
-            scope: str = "DEFAULT",
+            scope: str = SYMIGRATE_DEFAULT_SCOPE,
             out_stream=None
     ):
         self.executed_migration_repository = executed_migration_repository

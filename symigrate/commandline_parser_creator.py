@@ -2,7 +2,7 @@ import os
 from argparse import ArgumentParser
 
 from symigrate.defaults import SYMIGRATE_ENCODING, SYMIGRATE_MIGRATION_SUFFIX, SYMIGRATE_MIGRATION_SEPARATOR, \
-    SYMIGRATE_DEFAULT_SCOPE, SYMIGRATE_MIGRATION_PREFIX
+    SYMIGRATE_DEFAULT_SCOPE, SYMIGRATE_MIGRATION_PREFIX, SYMIGRATE_LOGGING_LEVEL
 
 
 class CommandlineParserCreator:
@@ -45,10 +45,17 @@ class CommandlineParserCreator:
             help="The encoding used to read migration files (default: %(default)s)",
             default=SYMIGRATE_ENCODING
         )
+        parser.add_argument(
+            "--logging-level",
+            choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+            help="Logging level (default: %(default)s)",
+            default=os.environ.get("SYMIGRATE_LOGGING_LEVEL", SYMIGRATE_LOGGING_LEVEL)
+        )
 
         subparsers = parser.add_subparsers(dest="command")
 
         info_parser = subparsers.add_parser("info", help="Show migration info")
+        migrate_parser = subparsers.add_parser("migrate", help="Execute migration")
 
         return parser
 

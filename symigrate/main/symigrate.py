@@ -1,13 +1,16 @@
+import logging
 import sqlite3
 import sys
 from argparse import Namespace
 
 from symigrate.command.info_command import InfoCommand
+from symigrate.command.migrate_command import MigrateCommand
 from symigrate.commandline_parser_creator import CommandlineParserCreator
 from symigrate.executed_migration_repository import ExecutedMigrationRepository
 from symigrate.migration_file_matcher import MigrationFileMatcher
 from symigrate.migration_merge_service import MigrationMergeService
 from symigrate.migration_repository import MigrationRepository
+from symigrate.migration_script_runner import MigrationScriptRunner
 
 
 class CommandlineParsePhase:
@@ -29,6 +32,10 @@ class InterfaceCreationPhase:
         self.commandline_arguments = commandline_arguments
 
     def start(self):
+        logging.basicConfig(
+            level=logging.getLevelName(self.commandline_arguments.logging_level.upper()),
+            format="%(levelname)s: %(message)s"
+        )
         database_connection = InterfaceCreationPhase.database_connection_hook or \
                               sqlite3.connect(self.commandline_arguments.db_file_path).cursor().connection
 
@@ -55,6 +62,7 @@ class MainPhase:
             migration_file_matcher
         )
         migration_merge_service = MigrationMergeService()
+        migration_script_runner = MigrationScriptRunner()
 
         self.info_command = InfoCommand(
             self.executed_migration_repository,
@@ -63,12 +71,23 @@ class MainPhase:
             commandline_arguments.scope,
             out_stream=MainPhase.out_stream_hook or sys.stdout
         )
+        self.migrate_command = MigrateCommand(
+            migration_repository,
+            self.executed_migration_repository,
+            migration_merge_service,
+            migration_script_runner,
+            commandline_arguments.scope,
+            commandline_arguments.migration_path,
+            out_stream=MainPhase.out_stream_hook or sys.stdout
+        )
 
     def start(self):
         self.executed_migration_repository.init()
 
         if self.commandline_arguments.command == "info":
             self.info_command.run()
+        elif self.commandline_arguments.command == "migrate":
+            self.migrate_command.run()
 
 
 def main():

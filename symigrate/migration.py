@@ -1,5 +1,6 @@
 from typing import List
 
+from symigrate.defaults import SYMIGRATE_DEFAULT_SCOPE
 from symigrate.migration_execution_result import MigrationExecutionResult
 from symigrate.migration_status import MigrationStatus
 
@@ -12,7 +13,7 @@ class Migration:
             script: str,
             filename: str,
             status: List[str] = None,
-            scope: str = "DEFAULT",
+            scope: str = SYMIGRATE_DEFAULT_SCOPE,
             execution_result: MigrationExecutionResult = None
     ):
         self.version = version
