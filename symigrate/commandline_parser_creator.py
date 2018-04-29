@@ -1,6 +1,9 @@
 import os
 from argparse import ArgumentParser
 
+from symigrate.defaults import SYMIGRATE_ENCODING, SYMIGRATE_MIGRATION_SUFFIX, SYMIGRATE_MIGRATION_SEPARATOR, \
+    SYMIGRATE_DEFAULT_SCOPE, SYMIGRATE_MIGRATION_PREFIX
+
 
 class CommandlineParserCreator:
 
@@ -20,8 +23,29 @@ class CommandlineParserCreator:
         parser.add_argument(
             "--scope",
             help="The migration scope (default: %(default)s)",
-            default=os.environ.get("SYMIGRATE_SCOPE", "DEFAULT")
+            default=os.environ.get("SYMIGRATE_SCOPE", SYMIGRATE_DEFAULT_SCOPE)
         )
+        parser.add_argument(
+            "--migration-prefix",
+            help="The migration file name prefix (default: %(default)s)",
+            default=os.environ.get("SYMIGRATE_MIGRATION_PREFIX", SYMIGRATE_MIGRATION_PREFIX)
+        )
+        parser.add_argument(
+            "--migration-separator",
+            help="The migration file name separator (default: %(default)s)",
+            default=os.environ.get("SYMIGRATE_MIGRATION_SEPARATOR", SYMIGRATE_MIGRATION_SEPARATOR)
+        )
+        parser.add_argument(
+            "--migration-suffix",
+            help="The migration file name suffix (default: %(default)s)",
+            default=os.environ.get("SYMIGRATE_MIGRATION_SUFFIX", SYMIGRATE_MIGRATION_SUFFIX)
+        )
+        parser.add_argument(
+            "--encoding",
+            help="The encoding used to read migration files (default: %(default)s)",
+            default=SYMIGRATE_ENCODING
+        )
+
         subparsers = parser.add_subparsers(dest="command")
 
         info_parser = subparsers.add_parser("info", help="Show migration info")

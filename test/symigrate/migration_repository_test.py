@@ -1,6 +1,7 @@
 import os
 import unittest
 
+from symigrate.migration_file_matcher import MigrationFileMatcher
 from symigrate.migration_repository import MigrationRepository
 
 
@@ -10,7 +11,10 @@ class MigrationRepositoryTestCase(unittest.TestCase):
         test_data_directory_path = os.path.join(os.path.dirname(__file__), "data", "migrations")
         self.assertTrue(os.path.isdir(test_data_directory_path))
 
-        self.migration_repository = MigrationRepository(test_data_directory_path)
+        migration_file_matcher = MigrationFileMatcher("V", "__", ".sh")
+        self.migration_repository = MigrationRepository(
+            test_data_directory_path, "DEFAULT", "utf-8", migration_file_matcher
+        )
 
     def test_find_all(self):
         migrations = self.migration_repository.find_all()

@@ -5,6 +5,7 @@ from argparse import Namespace
 from symigrate.command.info_command import InfoCommand
 from symigrate.commandline_parser_creator import CommandlineParserCreator
 from symigrate.executed_migration_repository import ExecutedMigrationRepository
+from symigrate.migration_file_matcher import MigrationFileMatcher
 from symigrate.migration_merge_service import MigrationMergeService
 from symigrate.migration_repository import MigrationRepository
 
@@ -42,7 +43,17 @@ class MainPhase:
         self.commandline_arguments = commandline_arguments
 
         self.executed_migration_repository = ExecutedMigrationRepository(database_connection)
-        migration_repository = MigrationRepository(commandline_arguments.migration_path, commandline_arguments.scope)
+        migration_file_matcher = MigrationFileMatcher(
+            commandline_arguments.migration_prefix,
+            commandline_arguments.migration_separator,
+            commandline_arguments.migration_suffix
+        )
+        migration_repository = MigrationRepository(
+            commandline_arguments.migration_path,
+            commandline_arguments.scope,
+            commandline_arguments.encoding,
+            migration_file_matcher
+        )
         migration_merge_service = MigrationMergeService()
 
         self.info_command = InfoCommand(

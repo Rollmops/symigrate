@@ -2,6 +2,7 @@ from datetime import datetime
 from sqlite3 import Connection
 from typing import List
 
+from symigrate.defaults import SYMIGRATE_TIMESTAMP_FORMAT
 from symigrate.executed_migration_repository_statements import QUERY_FIND_MIGRATION_BY_SCOPE, QUERY_INSERT_MIGRATION, \
     DDL_CREATE_MIGRATION_TABLE, QUERY_FIND_MIGRATION_TABLE
 from symigrate.migration import Migration
@@ -9,7 +10,6 @@ from symigrate.migration_execution_result import MigrationExecutionResult
 
 
 class ExecutedMigrationRepository:
-    TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
     def __init__(self, database_connection: Connection):
         self.database_connection = database_connection
@@ -30,7 +30,7 @@ class ExecutedMigrationRepository:
         self.database_connection.execute(QUERY_INSERT_MIGRATION, (
             migration.version,
             migration.description,
-            migration.execution_result.execution_timestamp.strftime(ExecutedMigrationRepository.TIMESTAMP_FORMAT),
+            migration.execution_result.execution_timestamp.strftime(SYMIGRATE_TIMESTAMP_FORMAT),
             migration.get_status_as_string(),
             migration.checksum,
             migration.execution_result.stdout,
@@ -53,7 +53,7 @@ class ExecutedMigrationRepository:
         migration_execution_result = MigrationExecutionResult(
             stdout=row[5],
             stderr=row[6],
-            execution_timestamp=datetime.strptime(row[2], ExecutedMigrationRepository.TIMESTAMP_FORMAT),
+            execution_timestamp=datetime.strptime(row[2], SYMIGRATE_TIMESTAMP_FORMAT),
 
         )
         migration = Migration(
