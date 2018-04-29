@@ -17,7 +17,8 @@ class MigrationRepository:
     def find_all(self) -> List[Migration]:
         migrations = (self._create_migration(regex_match) for regex_match in self._iterate_relevant_migration_files())
 
-        return sorted(migrations, key=lambda migration: migration.version)
+        sorted_migrations = sorted(migrations, key=lambda migration: migration.version)
+        return sorted_migrations
 
     def _iterate_relevant_migration_files(self):
         for filename in os.listdir(self.path):

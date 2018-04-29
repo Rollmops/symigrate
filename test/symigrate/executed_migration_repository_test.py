@@ -1,6 +1,5 @@
 import sqlite3
 import unittest
-from datetime import datetime
 
 from symigrate.executed_migration_repository import ExecutedMigrationRepository
 from symigrate.migration import Migration
@@ -48,31 +47,3 @@ class ExecutedMigrationRepositoryTestCase(unittest.TestCase):
         self.assertEqual("1234", row[5])
         self.assertEqual("DEFAULT", row[6])
         self.assertEqual("echo 'huhu'", row[7])
-
-    def test_find_all(self):
-        migration = Migration(
-            version="1.2.3",
-            description="some description",
-            execution_result=MigrationExecutionResult(
-                execution_timestamp=datetime(2018, 4, 28, 15, 48),
-                stdout="stdout output",
-                stderr="error output",
-            ),
-            status=[MigrationStatus.SUCCESS], checksum="1234", script="echo 'huhu'",
-            filename="V1.2.3__some_description.sh"
-        )
-
-        self.executed_migration_repository.init()
-        self.executed_migration_repository.push(migration)
-
-        stored_migrations = self.executed_migration_repository.find_all()
-        stored_migration = stored_migrations[0]
-
-        self.assertEqual("1.2.3", stored_migration.version)
-        self.assertEqual("some description", stored_migration.description)
-        self.assertEqual(datetime(2018, 4, 28, 15, 48), stored_migration.execution_result.execution_timestamp)
-        self.assertEqual("SUCCESS", stored_migration.get_status_as_string())
-        self.assertEqual("stdout output", stored_migration.execution_result.stdout)
-        self.assertEqual("error output", stored_migration.execution_result.stderr)
-        self.assertEqual("1234", stored_migration.checksum)
-        self.assertEqual("echo 'huhu'", stored_migration.script)
