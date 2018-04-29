@@ -30,7 +30,7 @@ class InterfaceCreationPhase:
 
     def start(self):
         database_connection = InterfaceCreationPhase.database_connection_hook or \
-                              sqlite3.connect(self.commandline_arguments.db_path).cursor().connection
+                              sqlite3.connect(self.commandline_arguments.db_file_path).cursor().connection
 
         main_phase = MainPhase(database_connection, self.commandline_arguments)
         main_phase.start()
