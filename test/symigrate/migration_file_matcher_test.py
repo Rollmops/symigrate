@@ -19,3 +19,16 @@ class MigrationFileMatcherTestCase(unittest.TestCase):
         match = migration_file_matcher.match("V1.2.3__some_description_sh")
 
         self.assertIsNone(match)
+
+    def test_all_suffix_match(self):
+        migration_file_matcher = MigrationFileMatcher("V", "__", None)
+
+        match_sh = migration_file_matcher.match("V1.2.3__some_description.sh")
+        self.assertIsNotNone(match_sh)
+        self.assertEqual("1.2.3", match_sh.version)
+        self.assertEqual("some description", match_sh.description)
+
+        match_miau_sh = migration_file_matcher.match("V1.2.3__some_description.miau.sh")
+        self.assertIsNotNone(match_miau_sh)
+        self.assertEqual("1.2.3", match_miau_sh.version)
+        self.assertEqual("some description", match_miau_sh.description)

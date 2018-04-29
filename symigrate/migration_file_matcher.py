@@ -9,7 +9,7 @@ class MigrationFileMatcher:
     def __init__(self, prefix: str, separator: str, suffix: str):
         self.prefix = prefix
         self.separator = separator
-        self.suffix = suffix
+        self.suffix = ".*" if suffix is None else suffix.replace(".", "\.")
 
     def match(self, filename: str) -> Union[MatchResult, None]:
         pattern = self._create_pattern()
@@ -24,9 +24,9 @@ class MigrationFileMatcher:
             )
 
     def _create_pattern(self):
-        pattern = r"^{prefix}(\S+){separator}(\S+){suffix}$".format(
+        pattern = r"^{prefix}(\S+){separator}([a-zA-Z0-9_]+){suffix}$".format(
             prefix=self.prefix,
             separator=self.separator,
-            suffix=self.suffix.replace(".", "\.")
+            suffix=self.suffix
         )
         return pattern
