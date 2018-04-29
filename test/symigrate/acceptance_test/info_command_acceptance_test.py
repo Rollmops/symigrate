@@ -9,7 +9,7 @@ from symigrate.main.symigrate import CommandlineParsePhase, InterfaceCreationPha
 class InfoCommandAcceptanceTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.migrations_path = os.path.join(os.path.dirname(__file__), "data", "migrations")
+        self.migrations_path = os.path.join(os.path.dirname(__file__), "..", "data", "migrations")
         self.assertTrue(os.path.isdir(self.migrations_path))
 
         self.database_connection = sqlite3.connect(":memory:")
