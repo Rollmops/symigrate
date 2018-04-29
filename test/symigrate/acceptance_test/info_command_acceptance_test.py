@@ -81,7 +81,7 @@ class InfoCommandAcceptanceTestCase(unittest.TestCase):
 
         self.assertEqual(expected_output, self.out_stream.getvalue())
 
-    def test_info_with_already_executed_migrations_incorrect_checksum(self):
+    def test_info_with_already_executed_migrations_checksum_mismatch(self):
         self.database_connection.execute(
             "INSERT INTO migration (scope, version, description, status, timestamp, checksum)"
             "VALUES"
