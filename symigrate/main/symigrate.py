@@ -105,7 +105,9 @@ class MainPhase:
         info_command.run()
 
     def _run_migrate_command(self):
-        migration_script_runner = MigrationScriptRunner(self.commandline_arguments.timeout)
+        migration_script_runner = MigrationScriptRunner(
+            self.commandline_arguments.timeout, self.commandline_arguments.encoding
+        )
         migrate_command = MigrateCommand(
             self.migration_repository,
             self.executed_migration_repository,

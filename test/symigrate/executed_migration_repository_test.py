@@ -25,7 +25,7 @@ class ExecutedMigrationRepositoryTestCase(unittest.TestCase):
             status=[MigrationStatus.SUCCESS],
             checksum="1234",
             script="echo 'huhu'",
-            execution_result=MigrationExecutionResult(stdout="stdout output", stderr="error output"),
+            execution_result=MigrationExecutionResult(),
             filename="V1.2.3__some_description.sh"
         )
 
@@ -33,7 +33,7 @@ class ExecutedMigrationRepositoryTestCase(unittest.TestCase):
         self.executed_migration_repository.push(migration)
 
         rows = self.database_connection.execute(
-            "SELECT version, description, status, stdout, stderr, "
+            "SELECT version, description, status, "
             "checksum, scope, script FROM migration").fetchall()
 
         self.assertEqual(1, len(rows))
@@ -42,8 +42,6 @@ class ExecutedMigrationRepositoryTestCase(unittest.TestCase):
         self.assertEqual("1.2.3", row[0])
         self.assertEqual("some description", row[1])
         self.assertEqual("SUCCESS", row[2])
-        self.assertEqual("stdout output", row[3])
-        self.assertEqual("error output", row[4])
-        self.assertEqual("1234", row[5])
-        self.assertEqual("DEFAULT", row[6])
-        self.assertEqual("echo 'huhu'", row[7])
+        self.assertEqual("1234", row[3])
+        self.assertEqual("DEFAULT", row[4])
+        self.assertEqual("echo 'huhu'", row[5])

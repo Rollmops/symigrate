@@ -1,6 +1,6 @@
 QUERY_FIND_MIGRATION_BY_SCOPE = \
     """
-    SELECT version, description, timestamp, status, checksum, stdout, stderr, scope, script, filename
+    SELECT version, description, timestamp, status, checksum, scope, script, filename
     FROM migration
     WHERE scope = ?
     ORDER BY version
@@ -8,7 +8,7 @@ QUERY_FIND_MIGRATION_BY_SCOPE = \
 
 QUERY_FIND_ALL_MIGRATIONS = \
     """
-    SELECT version, description, timestamp, status, checksum, stdout, stderr, scope, script, filename
+    SELECT version, description, timestamp, status, checksum, scope, script, filename
     FROM migration
     ORDER BY version
     """
@@ -16,9 +16,9 @@ QUERY_FIND_ALL_MIGRATIONS = \
 QUERY_INSERT_MIGRATION = \
     """
     INSERT INTO migration
-    (version, description, timestamp, status, checksum, stdout, stderr, scope, script, filename)
+    (version, description, timestamp, status, checksum, scope, script, filename)
     VALUES
-    (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    (?, ?, ?, ?, ?, ?, ?, ?)
     """
 
 DDL_CREATE_MIGRATION_TABLE = \
@@ -30,8 +30,6 @@ DDL_CREATE_MIGRATION_TABLE = \
         timestamp TEXT, 
         status TEXT,
         checksum TEXT, 
-        stdout TEXT, 
-        stderr TEXT, 
         scope TEXT, 
         script TEXT, 
         filename TEXT

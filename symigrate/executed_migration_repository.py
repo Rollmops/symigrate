@@ -38,8 +38,6 @@ class ExecutedMigrationRepository:
             migration.execution_result.execution_timestamp.strftime(SYMIGRATE_TIMESTAMP_FORMAT),
             migration.get_status_as_string(),
             migration.checksum,
-            migration.execution_result.stdout,
-            migration.execution_result.stderr,
             migration.scope,
             migration.script,
             migration.filename
@@ -59,8 +57,6 @@ class ExecutedMigrationRepository:
     @staticmethod
     def _create_migration_from_row(row):
         migration_execution_result = MigrationExecutionResult(
-            stdout=row[5],
-            stderr=row[6],
             execution_timestamp=datetime.strptime(row[2], SYMIGRATE_TIMESTAMP_FORMAT),
 
         )
@@ -69,9 +65,9 @@ class ExecutedMigrationRepository:
             description=row[1],
             status=row[3].split(","),
             checksum=row[4],
-            scope=row[7],
-            script=row[8],
+            scope=row[5],
+            script=row[6],
             execution_result=migration_execution_result,
-            filename=row[9]
+            filename=row[7]
         )
         return migration
