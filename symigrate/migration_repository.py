@@ -5,7 +5,6 @@ from typing import List, Union
 
 from symigrate.migration import Migration
 from symigrate.migration_file_matcher import MigrationFileMatcher
-from symigrate.migration_script_checker import MigrationScriptChecker
 
 LOGGER = logging.getLogger(__name__)
 
@@ -16,14 +15,12 @@ class MigrationRepository:
             path: str,
             scope: str,
             encoding: str,
-            migration_file_matcher: MigrationFileMatcher,
-            migration_script_checker: MigrationScriptChecker
+            migration_file_matcher: MigrationFileMatcher
     ):
         self.path = path
         self.scope = scope
         self.encoding = encoding
         self.migration_file_matcher = migration_file_matcher
-        self.migration_script_checker = migration_script_checker
 
     def find_all(self) -> List[Migration]:
         LOGGER.debug("Looking for migration scripts in: %s", self.path)
@@ -46,16 +43,16 @@ class MigrationRepository:
                 LOGGER.debug("Ignoring file '%s'", filename)
 
     def _create_migration(self, match_result: MigrationFileMatcher.MatchResult):
-        file_path = os.path.join(self.path, match_result.filename)
-        self.migration_script_checker.check(file_path)
-        migration_script_content = self._get_script_content(file_path)
+        full_file_path = os.path.join(self.path, match_result.filename)
+        migration_script_content = self._get_script_content(full_file_path)
         migration = Migration(
             version=match_result.version,
             description=match_result.description,
             checksum=self._calculate_checksum(migration_script_content),
             script=migration_script_content,
             scope=self.scope,
-            filename=match_result.filename
+            filename=match_result.filename,
+            full_file_path=full_file_path
         )
         return migration
 

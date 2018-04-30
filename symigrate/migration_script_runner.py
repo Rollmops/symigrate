@@ -20,7 +20,7 @@ class MigrationScriptRunner:
             execution_timestamp=datetime.now()
         )
         try:
-            process = subprocess.Popen(migration_file_path, shell=True)
+            process = subprocess.Popen(migration_file_path, shell=True, env={"SYMIGRATE_RUNNING": "true"})
             process.wait(self.timeout)
         except Exception as exception:
             LOGGER.error(repr(exception))

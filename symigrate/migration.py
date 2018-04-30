@@ -12,6 +12,7 @@ class Migration:
             checksum: str,
             script: str,
             filename: str,
+            full_file_path: str = None,
             status: List[str] = None,
             scope: str = SYMIGRATE_DEFAULT_SCOPE,
             execution_result: MigrationExecutionResult = None
@@ -22,6 +23,7 @@ class Migration:
         self.checksum = checksum
         self.script = script
         self.filename = filename
+        self.full_file_path = full_file_path or filename
         self.scope = scope
         self.execution_result = execution_result
 

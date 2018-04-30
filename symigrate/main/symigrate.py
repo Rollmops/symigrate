@@ -78,14 +78,11 @@ class MainPhase:
             commandline_arguments.migration_suffix
         )
 
-        migration_script_checker = MainPhase.migration_script_checker_hook or MigrationScriptChecker()
-
         self.migration_repository = MigrationRepository(
             commandline_arguments.migration_path,
             commandline_arguments.scope,
             commandline_arguments.encoding,
             migration_file_matcher,
-            migration_script_checker
         )
         self.migration_merge_service = MigrationMergeService()
 
@@ -101,10 +98,10 @@ class MainPhase:
 
     def _run_info_command(self):
         info_command = InfoCommand(
-            self.executed_migration_repository,
-            self.migration_repository,
-            self.migration_merge_service,
-            self.commandline_arguments.scope,
+            executed_migration_repository=self.executed_migration_repository,
+            migration_repository=self.migration_repository,
+            migration_merge_service=self.migration_merge_service,
+            scope=self.commandline_arguments.scope,
             out_stream=MainPhase.out_stream_hook or sys.stdout
         )
         info_command.run()
@@ -113,13 +110,14 @@ class MainPhase:
         migration_script_runner = MigrationScriptRunner(
             self.commandline_arguments.timeout, self.commandline_arguments.encoding
         )
+        migration_script_checker = MainPhase.migration_script_checker_hook or MigrationScriptChecker()
         migrate_command = MigrateCommand(
-            self.migration_repository,
-            self.executed_migration_repository,
-            self.migration_merge_service,
-            migration_script_runner,
-            self.commandline_arguments.scope,
-            self.commandline_arguments.migration_path,
+            migration_repository=self.migration_repository,
+            executed_migration_repository=self.executed_migration_repository,
+            migration_merge_service=self.migration_merge_service,
+            migration_script_runner=migration_script_runner,
+            migration_script_checker=migration_script_checker,
+            migration_path=self.commandline_arguments.migration_path,
             out_stream=MainPhase.out_stream_hook or sys.stdout,
             single=self.commandline_arguments.single
         )

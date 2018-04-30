@@ -8,6 +8,7 @@ from symigrate.executed_migration_repository import ExecutedMigrationRepository
 from symigrate.migration import Migration
 from symigrate.migration_merge_service import MigrationMergeService
 from symigrate.migration_repository import MigrationRepository
+from symigrate.migration_script_checker import MigrationScriptChecker
 from symigrate.migration_script_runner import MigrationScriptRunner
 from symigrate.migration_status import MigrationStatus
 
@@ -20,7 +21,7 @@ class MigrateCommand:
             executed_migration_repository: ExecutedMigrationRepository,
             migration_merge_service: MigrationMergeService,
             migration_script_runner: MigrationScriptRunner,
-            scope: str,
+            migration_script_checker: MigrationScriptChecker,
             migration_path: str,
             single: bool,
             out_stream=None,
@@ -29,13 +30,13 @@ class MigrateCommand:
         self.executed_migration_repository = executed_migration_repository
         self.migration_merge_service = migration_merge_service
         self.migration_script_runner = migration_script_runner
-        self.scope = scope
+        self.migration_script_checker = migration_script_checker
         self.migration_path = migration_path
         self.single = single
         self.out_stream = out_stream or sys.stdout
 
     def run(self):
-        executed_migrations = self.executed_migration_repository.find_all(self.scope)
+        executed_migrations = self.executed_migration_repository.find_all()
         migrations = self.migration_repository.find_all()
 
         merged_migrations = self.migration_merge_service.merge(migrations, executed_migrations)
@@ -44,16 +45,24 @@ class MigrateCommand:
         if not pending_migrations:
             LOGGER.info("No pending migrations found")
         else:
-            LOGGER.info("Found %d pending migrations", len(pending_migrations))
-            if self.single:
-                LOGGER.info("Only executing the next pending migration")
-                pending_migrations = pending_migrations[:1]
+            self._migrate(pending_migrations)
 
-            for pending_migration in pending_migrations:
-                migration_script_path = os.path.join(self.migration_path, pending_migration.filename)
-                self._run_migration(pending_migration, migration_script_path)
+    def _migrate(self, pending_migrations):
+        LOGGER.info("Found %d pending migrations", len(pending_migrations))
+        if self.single:
+            LOGGER.info("Only executing the next pending migration")
+            pending_migrations = pending_migrations[:1]
+        self._check_pending_migrations(pending_migrations)
+        for pending_migration in pending_migrations:
+            migration_script_path = os.path.join(self.migration_path, pending_migration.filename)
+            self._run_migration(pending_migration, migration_script_path)
 
-    def _get_pending_migrations(self, migrations: List[Migration]) -> List[Migration]:
+    def _check_pending_migrations(self, pending_migrations: List[Migration]):
+        for pending_migration in pending_migrations:
+            self.migration_script_checker.check(pending_migration.full_file_path)
+
+    @staticmethod
+    def _get_pending_migrations(migrations: List[Migration]) -> List[Migration]:
         pending_migrations = [migration for migration in migrations if migration.status == [MigrationStatus.PENDING]]
         return pending_migrations
 
