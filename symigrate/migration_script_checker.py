@@ -1,5 +1,7 @@
 import os
 
+from symigrate import SymigrateException
+
 
 class MigrationScriptChecker:
     @staticmethod
@@ -13,5 +15,5 @@ class MigrationScriptChecker:
                 "Migration script '{file_path}' is not executable".format(file_path=file_path)
             )
 
-    class MigrationScriptPermissionException(Exception):
+    class MigrationScriptPermissionException(SymigrateException):
         pass

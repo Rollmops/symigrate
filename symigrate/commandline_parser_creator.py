@@ -56,6 +56,7 @@ class CommandlineParserCreator:
 
         info_parser = subparsers.add_parser("info", help="Show migration info")
         migrate_parser = subparsers.add_parser("migrate", help="Execute migration")
+        migrate_parser.add_argument("--single", help="Only execute the next pending migration", action="store_true")
 
         return parser
 

@@ -21,7 +21,8 @@ class MigrateCommand:
             migration_script_runner: MigrationScriptRunner,
             scope: str,
             migration_path: str,
-            out_stream=None
+            single: bool,
+            out_stream=None,
     ):
         self.migration_repository = migration_repository
         self.executed_migration_repository = executed_migration_repository
@@ -29,6 +30,7 @@ class MigrateCommand:
         self.migration_script_runner = migration_script_runner
         self.scope = scope
         self.migration_path = migration_path
+        self.single = single
         self.out_stream = out_stream or sys.stdout
 
     def run(self):
@@ -42,6 +44,10 @@ class MigrateCommand:
             LOGGER.info("No pending migrations found")
         else:
             LOGGER.info("Found %d pending migrations", len(pending_migrations))
+            if self.single:
+                LOGGER.info("Only executing the next pending migration")
+                pending_migrations = pending_migrations[:1]
+
             for pending_migration in pending_migrations:
                 migration_script_path = os.path.join(self.migration_path, pending_migration.filename)
                 self._run_migration(pending_migration, migration_script_path)

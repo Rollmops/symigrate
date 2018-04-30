@@ -3,6 +3,7 @@ import sqlite3
 import sys
 from argparse import Namespace
 
+from symigrate import SymigrateException
 from symigrate.command.info_command import InfoCommand
 from symigrate.command.migrate_command import MigrateCommand
 from symigrate.commandline_parser_creator import CommandlineParserCreator
@@ -46,7 +47,7 @@ class InterfaceCreationPhase:
 
         try:
             main_phase.start()
-        except Exception as exception:
+        except SymigrateException as exception:
             LOGGER.error(repr(exception))
             exit(1)
         finally:
@@ -70,40 +71,40 @@ class MainPhase:
 
         migration_script_checker = MainPhase.migration_script_checker_hook or MigrationScriptChecker()
 
-        migration_repository = MigrationRepository(
+        self.migration_repository = MigrationRepository(
             commandline_arguments.migration_path,
             commandline_arguments.scope,
             commandline_arguments.encoding,
             migration_file_matcher,
             migration_script_checker
         )
-        migration_merge_service = MigrationMergeService()
-        migration_script_runner = MigrationScriptRunner()
-
-        self.info_command = InfoCommand(
-            self.executed_migration_repository,
-            migration_repository,
-            migration_merge_service,
-            commandline_arguments.scope,
-            out_stream=MainPhase.out_stream_hook or sys.stdout
-        )
-        self.migrate_command = MigrateCommand(
-            migration_repository,
-            self.executed_migration_repository,
-            migration_merge_service,
-            migration_script_runner,
-            commandline_arguments.scope,
-            commandline_arguments.migration_path,
-            out_stream=MainPhase.out_stream_hook or sys.stdout
-        )
+        self.migration_merge_service = MigrationMergeService()
+        self.migration_script_runner = MigrationScriptRunner()
 
     def start(self):
         self.executed_migration_repository.init()
 
         if self.commandline_arguments.command == "info":
-            self.info_command.run()
+            info_command = InfoCommand(
+                self.executed_migration_repository,
+                self.migration_repository,
+                self.migration_merge_service,
+                self.commandline_arguments.scope,
+                out_stream=MainPhase.out_stream_hook or sys.stdout
+            )
+            info_command.run()
         elif self.commandline_arguments.command == "migrate":
-            self.migrate_command.run()
+            migrate_command = MigrateCommand(
+                self.migration_repository,
+                self.executed_migration_repository,
+                self.migration_merge_service,
+                self.migration_script_runner,
+                self.commandline_arguments.scope,
+                self.commandline_arguments.migration_path,
+                out_stream=MainPhase.out_stream_hook or sys.stdout,
+                single=self.commandline_arguments.single
+            )
+            migrate_command.run()
 
 
 def main():
