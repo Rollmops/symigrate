@@ -48,7 +48,7 @@ class InterfaceCreationPhase:
         try:
             main_phase.start()
         except SymigrateException as exception:
-            LOGGER.error(repr(exception))
+            LOGGER.error("%s: %s", type(exception).__name__, str(exception))
             exit(1)
         finally:
             LOGGER.debug("Closing database connection")

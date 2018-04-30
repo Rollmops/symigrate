@@ -3,6 +3,7 @@ import os
 import sys
 from typing import List
 
+from symigrate import SymigrateException
 from symigrate.executed_migration_repository import ExecutedMigrationRepository
 from symigrate.migration import Migration
 from symigrate.migration_merge_service import MigrationMergeService
@@ -62,3 +63,8 @@ class MigrateCommand:
         merged_migration.status = \
             [MigrationStatus.SUCCESS] if migration_execution_result.success else [MigrationStatus.FAILED]
         self.executed_migration_repository.push(merged_migration)
+        if not migration_execution_result.success:
+            raise MigrateCommand.StopOnMigrationError("Stopping migration due to failed migration script execution")
+
+    class StopOnMigrationError(SymigrateException):
+        pass
