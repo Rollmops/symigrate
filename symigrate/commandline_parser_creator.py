@@ -12,44 +12,58 @@ class CommandlineParserCreator:
         parser = ArgumentParser()
         parser.add_argument(
             "--migration-path",
-            help="Migration directory path (default: %(default)s)",
+            help="Migration directory path (default: %(default)s). "
+                 "Environment variable: SYMIGRATE_MIGRATION_PATH",
             default=os.environ.get("SYMIGRATE_MIGRATION_PATH", os.getcwd())
         )
         parser.add_argument(
             "--db-file-path",
-            help="The path to the migration database file (default: %(default)s)",
+            help="The path to the migration database file (default: %(default)s). "
+                 "Environment variable: SYMIGRATE_DB_FILE_PATH",
             default=os.environ.get("SYMIGRATE_DB_FILE_PATH", CommandlineParserCreator._get_default_database_path())
         )
         parser.add_argument(
             "--scope",
-            help="The migration scope (default: %(default)s)",
+            help="The migration scope (default: %(default)s). "
+                 "Environment variable: SYMIGRATE_SCOPE",
             default=os.environ.get("SYMIGRATE_SCOPE", SYMIGRATE_DEFAULT_SCOPE)
         )
         parser.add_argument(
             "--migration-prefix",
-            help="The migration file name prefix (default: %(default)s)",
+            help="The migration file name prefix (default: %(default)s). "
+                 "Environment variable: SYMIGRATE_MIGRATION_PREFIX",
             default=os.environ.get("SYMIGRATE_MIGRATION_PREFIX", SYMIGRATE_MIGRATION_PREFIX)
         )
         parser.add_argument(
             "--migration-separator",
-            help="The migration file name separator (default: %(default)s)",
+            help="The migration file name separator (default: %(default)s). "
+                 "Environment variable: SYMIGRATE_MIGRATION_SEPARATOR",
             default=os.environ.get("SYMIGRATE_MIGRATION_SEPARATOR", SYMIGRATE_MIGRATION_SEPARATOR)
         )
         parser.add_argument(
             "--migration-suffix",
-            help="The migration file name suffix (default: %(default)s)",
+            help="The migration file name suffix (default: %(default)s). "
+                 "Environment variable: SYMIGRATE_MIGRATION_SUFFIX",
             default=os.environ.get("SYMIGRATE_MIGRATION_SUFFIX", SYMIGRATE_MIGRATION_SUFFIX)
         )
         parser.add_argument(
             "--encoding",
-            help="The encoding used to read migration files (default: %(default)s)",
-            default=SYMIGRATE_ENCODING
+            help="The encoding used to read migration files (default: %(default)s). "
+                 "Environment variable: SYMIGRATE_ENCODING",
+            default=os.environ.get("SYMIGRATE_ENCODING", SYMIGRATE_ENCODING)
         )
         parser.add_argument(
             "--logging-level",
             choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
-            help="Logging level (default: %(default)s)",
+            help="Logging level (default: %(default)s). "
+                 "Environment variable: SYMIGRATE_LOGGING_LEVEL",
             default=os.environ.get("SYMIGRATE_LOGGING_LEVEL", SYMIGRATE_LOGGING_LEVEL)
+        )
+        parser.add_argument(
+            "--logging-format",
+            help="Change the logging format (default: %(default)s). "
+                 "Environment variable: SYMIGRATE_LOGGING_FORMAT",
+            default=os.environ.get("SYMIGRATE_LOGGING_FORMAT", "%(levelname)s: %(message)s")
         )
 
         subparsers = parser.add_subparsers(dest="command")

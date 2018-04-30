@@ -38,7 +38,7 @@ class InterfaceCreationPhase:
     def start(self):
         logging.basicConfig(
             level=logging.getLevelName(self.commandline_arguments.logging_level.upper()),
-            format="%(levelname)s: %(message)s"
+            format=self.commandline_arguments.logging_format
         )
 
         database_connection = self._create_database_connection()
