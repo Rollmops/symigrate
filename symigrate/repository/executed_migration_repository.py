@@ -4,10 +4,11 @@ from sqlite3 import Connection
 from typing import List, Union
 
 from symigrate.defaults import SYMIGRATE_TIMESTAMP_FORMAT
-from symigrate.executed_migration_repository_statements import QUERY_FIND_MIGRATION_BY_SCOPE, QUERY_INSERT_MIGRATION, \
-    DDL_CREATE_MIGRATION_TABLE, QUERY_FIND_MIGRATION_TABLE
 from symigrate.migration import Migration
 from symigrate.migration_execution_result import MigrationExecutionResult
+from symigrate.repository.executed_migration_repository_statements import QUERY_FIND_MIGRATION_BY_SCOPE, \
+    QUERY_INSERT_MIGRATION, \
+    DDL_CREATE_MIGRATION_TABLE, QUERY_FIND_MIGRATION_TABLE
 
 LOGGER = logging.getLogger(__name__)
 

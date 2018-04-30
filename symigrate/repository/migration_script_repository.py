@@ -9,7 +9,7 @@ from symigrate.migration_file_matcher import MigrationFileMatcher
 LOGGER = logging.getLogger(__name__)
 
 
-class MigrationRepository:
+class MigrationScriptRepository:
     def __init__(
             self,
             path: str,

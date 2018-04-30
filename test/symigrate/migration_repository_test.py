@@ -2,7 +2,7 @@ import os
 import unittest
 
 from symigrate.migration_file_matcher import MigrationFileMatcher
-from symigrate.migration_repository import MigrationRepository
+from symigrate.repository.migration_script_repository import MigrationScriptRepository
 
 
 class MigrationRepositoryTestCase(unittest.TestCase):
@@ -12,7 +12,7 @@ class MigrationRepositoryTestCase(unittest.TestCase):
         self.assertTrue(os.path.isdir(test_data_directory_path))
 
         migration_file_matcher = MigrationFileMatcher("V", "__", ".sh")
-        self.migration_repository = MigrationRepository(
+        self.migration_repository = MigrationScriptRepository(
             test_data_directory_path,
             "DEFAULT",
             "utf-8",

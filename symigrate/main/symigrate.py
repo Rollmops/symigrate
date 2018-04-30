@@ -8,12 +8,12 @@ from symigrate.command.diff_command import DiffCommand
 from symigrate.command.info_command import InfoCommand
 from symigrate.command.migrate_command import MigrateCommand
 from symigrate.commandline_parser_creator import CommandlineParserCreator
-from symigrate.executed_migration_repository import ExecutedMigrationRepository
 from symigrate.migration_file_matcher import MigrationFileMatcher
 from symigrate.migration_merge_service import MigrationMergeService
-from symigrate.migration_repository import MigrationRepository
 from symigrate.migration_script_checker import MigrationScriptChecker
 from symigrate.migration_script_runner import MigrationScriptRunner
+from symigrate.repository.executed_migration_repository import ExecutedMigrationRepository
+from symigrate.repository.migration_script_repository import MigrationScriptRepository
 
 LOGGER = logging.getLogger(__name__)
 
@@ -65,6 +65,7 @@ class InterfaceCreationPhase:
 class MainPhase:
     out_stream_hook = None
     migration_script_checker_hook = None
+    migration_repository_hook = None
 
     def __init__(self, database_connection: sqlite3.Connection, commandline_arguments: Namespace):
         self.commandline_arguments = commandline_arguments
@@ -78,7 +79,7 @@ class MainPhase:
             commandline_arguments.migration_suffix
         )
 
-        self.migration_repository = MigrationRepository(
+        self.migration_script_repository = MigrationScriptRepository(
             commandline_arguments.migration_path,
             commandline_arguments.scope,
             commandline_arguments.encoding,
@@ -99,7 +100,7 @@ class MainPhase:
     def _run_info_command(self):
         info_command = InfoCommand(
             executed_migration_repository=self.executed_migration_repository,
-            migration_repository=self.migration_repository,
+            migration_script_repository=self.migration_script_repository,
             migration_merge_service=self.migration_merge_service,
             scope=self.commandline_arguments.scope,
             out_stream=MainPhase.out_stream_hook or sys.stdout
@@ -112,7 +113,7 @@ class MainPhase:
         )
         migration_script_checker = MainPhase.migration_script_checker_hook or MigrationScriptChecker()
         migrate_command = MigrateCommand(
-            migration_repository=self.migration_repository,
+            migration_script_repository=self.migration_script_repository,
             executed_migration_repository=self.executed_migration_repository,
             migration_merge_service=self.migration_merge_service,
             migration_script_runner=migration_script_runner,
@@ -125,7 +126,7 @@ class MainPhase:
 
     def _run_diff_command(self):
         diff_command = DiffCommand(
-            self.commandline_arguments.version, self.migration_repository, self.executed_migration_repository
+            self.commandline_arguments.version, self.migration_script_repository, self.executed_migration_repository
         )
         diff_command.run()
 

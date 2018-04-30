@@ -4,8 +4,8 @@ import unittest
 from io import StringIO
 from unittest.mock import Mock
 
-from symigrate.executed_migration_repository_statements import DDL_CREATE_MIGRATION_TABLE
 from symigrate.main.symigrate import CommandlineParsePhase, InterfaceCreationPhase, MainPhase
+from symigrate.repository.executed_migration_repository_statements import DDL_CREATE_MIGRATION_TABLE
 from test.symigrate.helper import dedent_and_remove_white_lines
 
 

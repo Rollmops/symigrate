@@ -1,8 +1,8 @@
 import logging
 from difflib import ndiff
 
-from symigrate.executed_migration_repository import ExecutedMigrationRepository
-from symigrate.migration_repository import MigrationRepository
+from symigrate.repository.executed_migration_repository import ExecutedMigrationRepository
+from symigrate.repository.migration_script_repository import MigrationScriptRepository
 
 LOGGER = logging.getLogger(__name__)
 
@@ -11,11 +11,11 @@ class DiffCommand:
     def __init__(
             self,
             version: str,
-            migration_repository: MigrationRepository,
+            migration_script_repository: MigrationScriptRepository,
             executed_migration_repository: ExecutedMigrationRepository
     ):
         self.version = version
-        self.migration_repository = migration_repository
+        self.migration_script_repository = migration_script_repository
         self.executed_migration_repository = executed_migration_repository
 
     def run(self):
@@ -24,7 +24,7 @@ class DiffCommand:
             LOGGER.warning("Unable to find executed migration for version '%s'", self.version)
             return
 
-        migration = self.migration_repository.find_by_version(self.version)
+        migration = self.migration_script_repository.find_by_version(self.version)
         if not migration:
             LOGGER.warning("Unable to find migration script for version '%s'", self.version)
             return

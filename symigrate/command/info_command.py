@@ -4,10 +4,10 @@ import sys
 from tabulate import tabulate
 
 from symigrate.defaults import SYMIGRATE_DEFAULT_SCOPE
-from symigrate.executed_migration_repository import ExecutedMigrationRepository
 from symigrate.migration import Migration
 from symigrate.migration_merge_service import MigrationMergeService
-from symigrate.migration_repository import MigrationRepository
+from symigrate.repository.executed_migration_repository import ExecutedMigrationRepository
+from symigrate.repository.migration_script_repository import MigrationScriptRepository
 
 LOGGER = logging.getLogger(__name__)
 
@@ -16,20 +16,20 @@ class InfoCommand:
     def __init__(
             self,
             executed_migration_repository: ExecutedMigrationRepository,
-            migration_repository: MigrationRepository,
+            migration_script_repository: MigrationScriptRepository,
             migration_merge_service: MigrationMergeService,
             scope: str = SYMIGRATE_DEFAULT_SCOPE,
             out_stream=None
     ):
         self.executed_migration_repository = executed_migration_repository
-        self.migration_repository = migration_repository
+        self.migration_script_repository = migration_script_repository
         self.migration_merge_service = migration_merge_service
         self.scope = scope
         self.out_stream = out_stream or sys.stdout
 
     def run(self):
         executed_migrations = self.executed_migration_repository.find_all()
-        migrations = self.migration_repository.find_all()
+        migrations = self.migration_script_repository.find_all()
 
         merged_migrations = self.migration_merge_service.merge(migrations, executed_migrations)
 

@@ -4,20 +4,20 @@ import sys
 from typing import List
 
 from symigrate import SymigrateException
-from symigrate.executed_migration_repository import ExecutedMigrationRepository
 from symigrate.migration import Migration
 from symigrate.migration_merge_service import MigrationMergeService
-from symigrate.migration_repository import MigrationRepository
 from symigrate.migration_script_checker import MigrationScriptChecker
 from symigrate.migration_script_runner import MigrationScriptRunner
 from symigrate.migration_status import MigrationStatus
+from symigrate.repository.executed_migration_repository import ExecutedMigrationRepository
+from symigrate.repository.migration_script_repository import MigrationScriptRepository
 
 LOGGER = logging.getLogger(__name__)
 
 
 class MigrateCommand:
     def __init__(
-            self, migration_repository: MigrationRepository,
+            self, migration_script_repository: MigrationScriptRepository,
             executed_migration_repository: ExecutedMigrationRepository,
             migration_merge_service: MigrationMergeService,
             migration_script_runner: MigrationScriptRunner,
@@ -26,7 +26,7 @@ class MigrateCommand:
             single: bool,
             out_stream=None,
     ):
-        self.migration_repository = migration_repository
+        self.migration_script_repository = migration_script_repository
         self.executed_migration_repository = executed_migration_repository
         self.migration_merge_service = migration_merge_service
         self.migration_script_runner = migration_script_runner
@@ -37,7 +37,7 @@ class MigrateCommand:
 
     def run(self):
         executed_migrations = self.executed_migration_repository.find_all()
-        migrations = self.migration_repository.find_all()
+        migrations = self.migration_script_repository.find_all()
 
         merged_migrations = self.migration_merge_service.merge(migrations, executed_migrations)
         pending_migrations = self._get_pending_migrations(merged_migrations)

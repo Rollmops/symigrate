@@ -2,10 +2,10 @@ import sqlite3
 import unittest
 
 from symigrate.defaults import SYMIGRATE_DEFAULT_SCOPE
-from symigrate.executed_migration_repository import ExecutedMigrationRepository
 from symigrate.migration import Migration
 from symigrate.migration_execution_result import MigrationExecutionResult
 from symigrate.migration_status import MigrationStatus
+from symigrate.repository.executed_migration_repository import ExecutedMigrationRepository
 
 
 class ExecutedMigrationRepositoryTestCase(unittest.TestCase):
