@@ -30,7 +30,7 @@ class CommandlineParserCreator:
 
     @staticmethod
     def _setup_info_parser(subparsers):
-        info_parser = subparsers.add_parser("info", help="Show migration info")
+        subparsers.add_parser("info", help="Show migration info")
 
     @staticmethod
     def _setup_global_parser(parser):
