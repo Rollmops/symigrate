@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
 from sqlite3 import Connection
-from typing import List
+from typing import List, Union
 
 from symigrate.defaults import SYMIGRATE_TIMESTAMP_FORMAT
 from symigrate.executed_migration_repository_statements import QUERY_FIND_MIGRATION_BY_SCOPE, QUERY_INSERT_MIGRATION, \
@@ -14,7 +14,8 @@ LOGGER = logging.getLogger(__name__)
 
 class ExecutedMigrationRepository:
 
-    def __init__(self, database_connection: Connection):
+    def __init__(self, scope: str, database_connection: Connection):
+        self.scope = scope
         self.database_connection = database_connection
 
     def _create_schema(self):
@@ -45,14 +46,17 @@ class ExecutedMigrationRepository:
 
         self.database_connection.commit()
 
-    def find_by_scope(self, scope: str) -> List[Migration]:
-        LOGGER.debug("Looking for executed migrations for scope '%s'", scope)
-        cursor = self.database_connection.execute(QUERY_FIND_MIGRATION_BY_SCOPE, (scope,))
+    def find_all(self) -> List[Migration]:
+        LOGGER.debug("Looking for executed migrations for scope '%s'", self.scope)
+        cursor = self.database_connection.execute(QUERY_FIND_MIGRATION_BY_SCOPE, (self.scope,))
         migrations = [self._create_migration_from_row(row) for row in cursor]
 
-        LOGGER.debug("Found %d executed migrations for scope '%s'", len(migrations), scope)
+        LOGGER.debug("Found %d executed migrations for scope '%s'", len(migrations), self.scope)
 
         return migrations
+
+    def find_by_version(self, version: str) -> Union[Migration, None]:
+        return next((migration for migration in self.find_all() if migration.version == version), None)
 
     @staticmethod
     def _create_migration_from_row(row):

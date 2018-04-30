@@ -4,6 +4,7 @@ import sys
 from argparse import Namespace
 
 from symigrate import SymigrateException
+from symigrate.command.diff_command import DiffCommand
 from symigrate.command.info_command import InfoCommand
 from symigrate.command.migrate_command import MigrateCommand
 from symigrate.commandline_parser_creator import CommandlineParserCreator
@@ -68,7 +69,9 @@ class MainPhase:
     def __init__(self, database_connection: sqlite3.Connection, commandline_arguments: Namespace):
         self.commandline_arguments = commandline_arguments
 
-        self.executed_migration_repository = ExecutedMigrationRepository(database_connection)
+        self.executed_migration_repository = ExecutedMigrationRepository(
+            self.commandline_arguments.scope, database_connection
+        )
         migration_file_matcher = MigrationFileMatcher(
             commandline_arguments.migration_prefix,
             commandline_arguments.migration_separator,
@@ -93,6 +96,8 @@ class MainPhase:
             self._run_info_command()
         elif self.commandline_arguments.command == "migrate":
             self._run_migrate_command()
+        elif self.commandline_arguments.command == "diff":
+            self._run_diff_command()
 
     def _run_info_command(self):
         info_command = InfoCommand(
@@ -119,6 +124,12 @@ class MainPhase:
             single=self.commandline_arguments.single
         )
         migrate_command.run()
+
+    def _run_diff_command(self):
+        diff_command = DiffCommand(
+            self.commandline_arguments.version, self.migration_repository, self.executed_migration_repository
+        )
+        diff_command.run()
 
 
 def main():

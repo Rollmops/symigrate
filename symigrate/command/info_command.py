@@ -28,7 +28,7 @@ class InfoCommand:
         self.out_stream = out_stream or sys.stdout
 
     def run(self):
-        executed_migrations = self.executed_migration_repository.find_by_scope(self.scope)
+        executed_migrations = self.executed_migration_repository.find_all()
         migrations = self.migration_repository.find_all()
 
         merged_migrations = self.migration_merge_service.merge(migrations, executed_migrations)
@@ -37,7 +37,7 @@ class InfoCommand:
         header = ["Version", "Description", "Migration Date", "Status"]
 
         self.out_stream.write("Scope: {scope}\n".format(scope=self.scope))
-        self.out_stream.write(tabulate(table, header, "grid"))
+        self.out_stream.write(tabulate(table, header, "grid", disable_numparse=True))
         self.out_stream.write("\n")
 
     @staticmethod

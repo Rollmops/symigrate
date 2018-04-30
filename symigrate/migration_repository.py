@@ -1,7 +1,7 @@
 import hashlib
 import logging
 import os
-from typing import List
+from typing import List, Union
 
 from symigrate.migration import Migration
 from symigrate.migration_file_matcher import MigrationFileMatcher
@@ -32,6 +32,9 @@ class MigrationRepository:
         sorted_migrations = sorted(migrations, key=lambda migration: migration.version)
         LOGGER.debug("Found %d migration scripts", len(sorted_migrations))
         return sorted_migrations
+
+    def find_by_version(self, version: str) -> Union[Migration, None]:
+        return next((migration for migration in self.find_all() if migration.version == version), None)
 
     def _iterate_relevant_migration_files(self):
         for filename in sorted(os.listdir(self.path)):

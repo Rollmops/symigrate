@@ -15,8 +15,18 @@ class CommandlineParserCreator:
         subparsers = parser.add_subparsers(dest="command")
         CommandlineParserCreator._setup_info_parser(subparsers)
         CommandlineParserCreator._setup_migrate_parser(subparsers)
+        CommandlineParserCreator._setup_diff_parser(subparsers)
 
         return parser
+
+    @staticmethod
+    def _setup_diff_parser(subparsers):
+        diff_parser = subparsers.add_parser("diff", help="Show difference of a modified migration script")
+        diff_parser.add_argument(
+            "--version",
+            help="The version that should be compared",
+            required=True
+        )
 
     @staticmethod
     def _setup_info_parser(subparsers):

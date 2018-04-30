@@ -35,7 +35,7 @@ class MigrateCommand:
         self.out_stream = out_stream or sys.stdout
 
     def run(self):
-        executed_migrations = self.executed_migration_repository.find_by_scope(self.scope)
+        executed_migrations = self.executed_migration_repository.find_all(self.scope)
         migrations = self.migration_repository.find_all()
 
         merged_migrations = self.migration_merge_service.merge(migrations, executed_migrations)

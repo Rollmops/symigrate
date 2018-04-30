@@ -1,6 +1,7 @@
 import sqlite3
 import unittest
 
+from symigrate.defaults import SYMIGRATE_DEFAULT_SCOPE
 from symigrate.executed_migration_repository import ExecutedMigrationRepository
 from symigrate.migration import Migration
 from symigrate.migration_execution_result import MigrationExecutionResult
@@ -10,7 +11,9 @@ from symigrate.migration_status import MigrationStatus
 class ExecutedMigrationRepositoryTestCase(unittest.TestCase):
     def setUp(self):
         self.database_connection = sqlite3.connect(":memory:").cursor().connection
-        self.executed_migration_repository = ExecutedMigrationRepository(self.database_connection)
+        self.executed_migration_repository = ExecutedMigrationRepository(
+            SYMIGRATE_DEFAULT_SCOPE, self.database_connection
+        )
 
     def test_create_initial_schema(self):
         self.executed_migration_repository.init()
