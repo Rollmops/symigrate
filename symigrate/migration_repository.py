@@ -26,16 +26,21 @@ class MigrationRepository:
         self.migration_script_checker = migration_script_checker
 
     def find_all(self) -> List[Migration]:
+        LOGGER.debug("Looking for migration scripts in: %s", self.path)
         migrations = (self._create_migration(match_result) for match_result in self._iterate_relevant_migration_files())
 
         sorted_migrations = sorted(migrations, key=lambda migration: migration.version)
+        LOGGER.debug("Found %d migration scripts", len(sorted_migrations))
         return sorted_migrations
 
     def _iterate_relevant_migration_files(self):
-        for filename in os.listdir(self.path):
+        for filename in sorted(os.listdir(self.path)):
             match_result = self.migration_file_matcher.match(filename)
             if match_result is not None:
+                LOGGER.debug("Found migration script: %s", filename)
                 yield match_result
+            else:
+                LOGGER.debug("Ignoring file '%s'", filename)
 
     def _create_migration(self, match_result: MigrationFileMatcher.MatchResult):
         file_path = os.path.join(self.path, match_result.filename)

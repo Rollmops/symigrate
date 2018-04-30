@@ -27,3 +27,8 @@ class Migration:
 
     def get_status_as_string(self):
         return ", ".join(self.status)
+
+    def __str__(self):
+        return "Migration(version={version}, description='{description}', status={status})".format(
+            version=self.version, description=self.description, status=self.status
+        )

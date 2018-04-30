@@ -40,8 +40,8 @@ class InterfaceCreationPhase:
             level=logging.getLevelName(self.commandline_arguments.logging_level.upper()),
             format="%(levelname)s: %(message)s"
         )
-        database_connection = InterfaceCreationPhase.database_connection_hook or \
-                              sqlite3.connect(self.commandline_arguments.db_file_path).cursor().connection
+
+        database_connection = self._create_database_connection()
 
         main_phase = MainPhase(database_connection, self.commandline_arguments)
 
@@ -53,6 +53,12 @@ class InterfaceCreationPhase:
         finally:
             LOGGER.debug("Closing database connection")
             database_connection.close()
+
+    def _create_database_connection(self):
+        LOGGER.debug("Opening database file '%s'", self.commandline_arguments.db_file_path)
+        database_connection = InterfaceCreationPhase.database_connection_hook or \
+                              sqlite3.connect(self.commandline_arguments.db_file_path).cursor().connection
+        return database_connection
 
 
 class MainPhase:

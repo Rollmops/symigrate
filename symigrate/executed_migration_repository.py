@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 from sqlite3 import Connection
 from typing import List
@@ -8,6 +9,8 @@ from symigrate.executed_migration_repository_statements import QUERY_FIND_MIGRAT
 from symigrate.migration import Migration
 from symigrate.migration_execution_result import MigrationExecutionResult
 
+LOGGER = logging.getLogger(__name__)
+
 
 class ExecutedMigrationRepository:
 
@@ -15,6 +18,7 @@ class ExecutedMigrationRepository:
         self.database_connection = database_connection
 
     def _create_schema(self):
+        LOGGER.info("Initializing migration database")
         self.database_connection.execute(DDL_CREATE_MIGRATION_TABLE)
 
     def _schema_exists(self) -> bool:
@@ -27,6 +31,7 @@ class ExecutedMigrationRepository:
             self._create_schema()
 
     def push(self, migration: Migration):
+        LOGGER.debug("Saving executed migration %s", migration)
         self.database_connection.execute(QUERY_INSERT_MIGRATION, (
             migration.version,
             migration.description,
@@ -43,8 +48,11 @@ class ExecutedMigrationRepository:
         self.database_connection.commit()
 
     def find_by_scope(self, scope: str) -> List[Migration]:
+        LOGGER.debug("Looking for executed migrations for scope '%s'", scope)
         cursor = self.database_connection.execute(QUERY_FIND_MIGRATION_BY_SCOPE, (scope,))
         migrations = [self._create_migration_from_row(row) for row in cursor]
+
+        LOGGER.debug("Found %d executed migrations for scope '%s'", len(migrations), scope)
 
         return migrations
 
