@@ -2,6 +2,7 @@ import os
 import sqlite3
 import unittest
 from io import StringIO
+from unittest.mock import Mock
 
 from symigrate.executed_migration_repository_statements import DDL_CREATE_MIGRATION_TABLE
 from symigrate.main.symigrate import CommandlineParsePhase, InterfaceCreationPhase, MainPhase
@@ -19,6 +20,7 @@ class InfoCommandAcceptanceTestCase(unittest.TestCase):
         self.out_stream = StringIO()
         InterfaceCreationPhase.database_connection_hook = self.database_connection
         MainPhase.out_stream_hook = self.out_stream
+        MainPhase.migration_script_checker_hook = Mock()
 
     def test_info_no_scope(self):
         commandline_parse_phase = CommandlineParsePhase()

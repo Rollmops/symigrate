@@ -10,7 +10,10 @@ from symigrate.executed_migration_repository import ExecutedMigrationRepository
 from symigrate.migration_file_matcher import MigrationFileMatcher
 from symigrate.migration_merge_service import MigrationMergeService
 from symigrate.migration_repository import MigrationRepository
+from symigrate.migration_script_checker import MigrationScriptChecker
 from symigrate.migration_script_runner import MigrationScriptRunner
+
+LOGGER = logging.getLogger(__name__)
 
 
 class CommandlineParsePhase:
@@ -40,11 +43,20 @@ class InterfaceCreationPhase:
                               sqlite3.connect(self.commandline_arguments.db_file_path).cursor().connection
 
         main_phase = MainPhase(database_connection, self.commandline_arguments)
-        main_phase.start()
+
+        try:
+            main_phase.start()
+        except Exception as exception:
+            LOGGER.error(repr(exception))
+            exit(1)
+        finally:
+            LOGGER.debug("Closing database connection")
+            database_connection.close()
 
 
 class MainPhase:
     out_stream_hook = None
+    migration_script_checker_hook = None
 
     def __init__(self, database_connection: sqlite3.Connection, commandline_arguments: Namespace):
         self.commandline_arguments = commandline_arguments
@@ -55,11 +67,15 @@ class MainPhase:
             commandline_arguments.migration_separator,
             commandline_arguments.migration_suffix
         )
+
+        migration_script_checker = MainPhase.migration_script_checker_hook or MigrationScriptChecker()
+
         migration_repository = MigrationRepository(
             commandline_arguments.migration_path,
             commandline_arguments.scope,
             commandline_arguments.encoding,
-            migration_file_matcher
+            migration_file_matcher,
+            migration_script_checker
         )
         migration_merge_service = MigrationMergeService()
         migration_script_runner = MigrationScriptRunner()

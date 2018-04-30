@@ -1,17 +1,29 @@
 import hashlib
+import logging
 import os
 from typing import List
 
 from symigrate.migration import Migration
 from symigrate.migration_file_matcher import MigrationFileMatcher
+from symigrate.migration_script_checker import MigrationScriptChecker
+
+LOGGER = logging.getLogger(__name__)
 
 
 class MigrationRepository:
-    def __init__(self, path: str, scope: str, encoding: str, migration_file_matcher: MigrationFileMatcher):
+    def __init__(
+            self,
+            path: str,
+            scope: str,
+            encoding: str,
+            migration_file_matcher: MigrationFileMatcher,
+            migration_script_checker: MigrationScriptChecker
+    ):
         self.path = path
         self.scope = scope
         self.encoding = encoding
         self.migration_file_matcher = migration_file_matcher
+        self.migration_script_checker = migration_script_checker
 
     def find_all(self) -> List[Migration]:
         migrations = (self._create_migration(match_result) for match_result in self._iterate_relevant_migration_files())
@@ -27,6 +39,7 @@ class MigrationRepository:
 
     def _create_migration(self, match_result: MigrationFileMatcher.MatchResult):
         file_path = os.path.join(self.path, match_result.filename)
+        self.migration_script_checker.check(file_path)
         migration_script_content = self._get_script_content(file_path)
         migration = Migration(
             version=match_result.version,
