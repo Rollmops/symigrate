@@ -96,7 +96,7 @@ class CommandlineParserCreator:
         migrate_parser.add_argument("--single", help="Only execute the next pending migration", action="store_true")
         migrate_parser.add_argument(
             "--timeout",
-            help="Maxiumum timeout in seconds for migration scripts (default: %(default)s). "
+            help="Timeout in seconds for migration scripts (default: %(default)s). "
                  "Environment variable: SYMIGRATE_MIGRATION_TIMEOUT",
             default=os.environ.get("SYMIGRATE_MIGRATION_TIMEOUT", SYMIGRATE_MIGRATION_TIMEOUT),
             type=int
