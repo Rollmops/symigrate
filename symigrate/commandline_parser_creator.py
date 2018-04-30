@@ -2,7 +2,7 @@ import os
 from argparse import ArgumentParser
 
 from symigrate.defaults import SYMIGRATE_ENCODING, SYMIGRATE_MIGRATION_SUFFIX, SYMIGRATE_MIGRATION_SEPARATOR, \
-    SYMIGRATE_DEFAULT_SCOPE, SYMIGRATE_MIGRATION_PREFIX, SYMIGRATE_LOGGING_LEVEL
+    SYMIGRATE_DEFAULT_SCOPE, SYMIGRATE_MIGRATION_PREFIX, SYMIGRATE_LOGGING_LEVEL, SYMIGRATE_MIGRATION_TIMEOUT
 
 
 class CommandlineParserCreator:
@@ -10,6 +10,20 @@ class CommandlineParserCreator:
     @staticmethod
     def create():
         parser = ArgumentParser()
+        CommandlineParserCreator._setup_global_parser(parser)
+
+        subparsers = parser.add_subparsers(dest="command")
+        CommandlineParserCreator._setup_info_parser(subparsers)
+        CommandlineParserCreator._setup_migrate_parser(subparsers)
+
+        return parser
+
+    @staticmethod
+    def _setup_info_parser(subparsers):
+        info_parser = subparsers.add_parser("info", help="Show migration info")
+
+    @staticmethod
+    def _setup_global_parser(parser):
         parser.add_argument(
             "--migration-path",
             help="Migration directory path (default: %(default)s). "
@@ -66,13 +80,17 @@ class CommandlineParserCreator:
             default=os.environ.get("SYMIGRATE_LOGGING_FORMAT", "%(levelname)s: %(message)s")
         )
 
-        subparsers = parser.add_subparsers(dest="command")
-
-        info_parser = subparsers.add_parser("info", help="Show migration info")
+    @staticmethod
+    def _setup_migrate_parser(subparsers):
         migrate_parser = subparsers.add_parser("migrate", help="Execute migration")
         migrate_parser.add_argument("--single", help="Only execute the next pending migration", action="store_true")
-
-        return parser
+        migrate_parser.add_argument(
+            "--timeout",
+            help="Maxiumum timeout in seconds for migration scripts (default: %(default)s). "
+                 "Environment variable: SYMIGRATE_MIGRATION_TIMEOUT",
+            default=os.environ.get("SYMIGRATE_MIGRATION_TIMEOUT", SYMIGRATE_MIGRATION_TIMEOUT),
+            type=int
+        )
 
     @staticmethod
     def _get_default_database_path():

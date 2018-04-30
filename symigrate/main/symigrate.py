@@ -85,32 +85,38 @@ class MainPhase:
             migration_script_checker
         )
         self.migration_merge_service = MigrationMergeService()
-        self.migration_script_runner = MigrationScriptRunner()
 
     def start(self):
         self.executed_migration_repository.init()
 
         if self.commandline_arguments.command == "info":
-            info_command = InfoCommand(
-                self.executed_migration_repository,
-                self.migration_repository,
-                self.migration_merge_service,
-                self.commandline_arguments.scope,
-                out_stream=MainPhase.out_stream_hook or sys.stdout
-            )
-            info_command.run()
+            self._run_info_command()
         elif self.commandline_arguments.command == "migrate":
-            migrate_command = MigrateCommand(
-                self.migration_repository,
-                self.executed_migration_repository,
-                self.migration_merge_service,
-                self.migration_script_runner,
-                self.commandline_arguments.scope,
-                self.commandline_arguments.migration_path,
-                out_stream=MainPhase.out_stream_hook or sys.stdout,
-                single=self.commandline_arguments.single
-            )
-            migrate_command.run()
+            self._run_migrate_command()
+
+    def _run_info_command(self):
+        info_command = InfoCommand(
+            self.executed_migration_repository,
+            self.migration_repository,
+            self.migration_merge_service,
+            self.commandline_arguments.scope,
+            out_stream=MainPhase.out_stream_hook or sys.stdout
+        )
+        info_command.run()
+
+    def _run_migrate_command(self):
+        migration_script_runner = MigrationScriptRunner(self.commandline_arguments.timeout)
+        migrate_command = MigrateCommand(
+            self.migration_repository,
+            self.executed_migration_repository,
+            self.migration_merge_service,
+            migration_script_runner,
+            self.commandline_arguments.scope,
+            self.commandline_arguments.migration_path,
+            out_stream=MainPhase.out_stream_hook or sys.stdout,
+            single=self.commandline_arguments.single
+        )
+        migrate_command.run()
 
 
 def main():
