@@ -1,4 +1,3 @@
-import os
 import sqlite3
 import unittest
 from io import StringIO
@@ -13,9 +12,6 @@ from test.symigrate.helper import dedent_and_remove_white_lines
 class InfoCommandAcceptanceTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.migrations_path = os.path.join(os.path.dirname(__file__), "..", "data", "migrations")
-        self.assertTrue(os.path.isdir(self.migrations_path))
-
         self.database_connection = sqlite3.connect(":memory:")
         self.database_connection.execute(DDL_CREATE_MIGRATION_TABLE)
         self.out_stream = StringIO()
@@ -33,7 +29,7 @@ class InfoCommandAcceptanceTestCase(unittest.TestCase):
     def test_info_no_scope(self):
         commandline_parse_phase = CommandlineParsePhase()
 
-        commandline_parse_phase.start(["--migration-path", self.migrations_path, "info"])
+        commandline_parse_phase.start(["info"])
 
         expected_output = dedent_and_remove_white_lines("""
             Scope: DEFAULT
@@ -51,7 +47,7 @@ class InfoCommandAcceptanceTestCase(unittest.TestCase):
     def test_info_custom_scope(self):
         commandline_parse_phase = CommandlineParsePhase()
 
-        commandline_parse_phase.start(["--migration-path", self.migrations_path, "--scope", "my_scope", "info"])
+        commandline_parse_phase.start(["--scope", "my_scope", "info"])
 
         expected_output = dedent_and_remove_white_lines("""
             Scope: my_scope
@@ -76,7 +72,7 @@ class InfoCommandAcceptanceTestCase(unittest.TestCase):
 
         commandline_parse_phase = CommandlineParsePhase()
 
-        commandline_parse_phase.start(["--migration-path", self.migrations_path, "info"])
+        commandline_parse_phase.start(["info"])
 
         expected_output = dedent_and_remove_white_lines("""
             Scope: DEFAULT
@@ -101,7 +97,7 @@ class InfoCommandAcceptanceTestCase(unittest.TestCase):
 
         commandline_parse_phase = CommandlineParsePhase()
 
-        commandline_parse_phase.start(["--migration-path", self.migrations_path, "info"])
+        commandline_parse_phase.start(["info"])
 
         expected_output = dedent_and_remove_white_lines(
             """
