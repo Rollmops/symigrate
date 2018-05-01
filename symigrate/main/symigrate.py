@@ -53,7 +53,8 @@ class InterfaceCreationPhase:
             exit(1)
         finally:
             LOGGER.debug("Closing database connection")
-            database_connection.close()
+            if not InterfaceCreationPhase.database_connection_hook:
+                database_connection.close()
 
     def _create_database_connection(self):
         LOGGER.debug("Opening database file '%s'", self.commandline_arguments.db_file_path)
@@ -65,6 +66,7 @@ class InterfaceCreationPhase:
 class MainPhase:
     out_stream_hook = None
     migration_script_checker_hook = None
+    migration_script_runner_hook = None
     migration_script_repository_hook = None
 
     def __init__(self, database_connection: sqlite3.Connection, commandline_arguments: Namespace):
@@ -110,9 +112,10 @@ class MainPhase:
         info_command.run()
 
     def _run_migrate_command(self):
-        migration_script_runner = MigrationScriptRunner(
-            self.commandline_arguments.timeout, self.commandline_arguments.encoding
-        )
+        migration_script_runner = \
+            MainPhase.migration_script_runner_hook or MigrationScriptRunner(
+                self.commandline_arguments.timeout, self.commandline_arguments.encoding
+            )
         migration_script_checker = MainPhase.migration_script_checker_hook or MigrationScriptChecker()
         migrate_command = MigrateCommand(
             migration_script_repository=self.migration_script_repository,
