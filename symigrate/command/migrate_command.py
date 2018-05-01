@@ -68,12 +68,15 @@ class MigrateCommand:
 
     def _run_migration(self, merged_migration, migration_script_path):
         migration_execution_result = self.migration_script_runner.run_migration_script(migration_script_path)
+        self._save_migration_execution_result(merged_migration, migration_execution_result)
+        if not migration_execution_result.success:
+            raise MigrateCommand.StopOnMigrationError("Stopping migration due to failed migration script execution")
+
+    def _save_migration_execution_result(self, merged_migration, migration_execution_result):
         merged_migration.execution_result = migration_execution_result
         merged_migration.status = \
             [MigrationStatus.SUCCESS] if migration_execution_result.success else [MigrationStatus.FAILED]
         self.executed_migration_repository.push(merged_migration)
-        if not migration_execution_result.success:
-            raise MigrateCommand.StopOnMigrationError("Stopping migration due to failed migration script execution")
 
     class StopOnMigrationError(SymigrateException):
         pass
