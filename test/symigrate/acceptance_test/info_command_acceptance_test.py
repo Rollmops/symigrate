@@ -6,7 +6,7 @@ from unittest.mock import Mock
 from symigrate.main.symigrate import CommandlineParsePhase, InterfaceCreationPhase, MainPhase
 from symigrate.migration import Migration
 from symigrate.repository.executed_migration_repository_statements import DDL_CREATE_MIGRATION_TABLE
-from test.symigrate.helper import dedent_and_remove_white_lines
+from test.symigrate.helper import dedent_and_remove_first_empty_line
 
 
 class InfoCommandAcceptanceTestCase(unittest.TestCase):
@@ -31,7 +31,7 @@ class InfoCommandAcceptanceTestCase(unittest.TestCase):
 
         commandline_parse_phase.start(["info"])
 
-        expected_output = dedent_and_remove_white_lines("""
+        expected_output = dedent_and_remove_first_empty_line("""
             Scope: DEFAULT
             +-----------+-------------------+------------------+----------+
             | Version   | Description       | Migration Date   | Status   |
@@ -49,7 +49,7 @@ class InfoCommandAcceptanceTestCase(unittest.TestCase):
 
         commandline_parse_phase.start(["--scope", "my_scope", "info"])
 
-        expected_output = dedent_and_remove_white_lines("""
+        expected_output = dedent_and_remove_first_empty_line("""
             Scope: my_scope
             +-----------+-------------------+------------------+----------+
             | Version   | Description       | Migration Date   | Status   |
@@ -74,7 +74,7 @@ class InfoCommandAcceptanceTestCase(unittest.TestCase):
 
         commandline_parse_phase.start(["info"])
 
-        expected_output = dedent_and_remove_white_lines("""
+        expected_output = dedent_and_remove_first_empty_line("""
             Scope: DEFAULT
             +-----------+-------------------+---------------------+----------+
             | Version   | Description       | Migration Date      | Status   |
@@ -99,7 +99,7 @@ class InfoCommandAcceptanceTestCase(unittest.TestCase):
 
         commandline_parse_phase.start(["info"])
 
-        expected_output = dedent_and_remove_white_lines(
+        expected_output = dedent_and_remove_first_empty_line(
             """
             Scope: DEFAULT
             +-----------+-------------------+---------------------+-------------------+
