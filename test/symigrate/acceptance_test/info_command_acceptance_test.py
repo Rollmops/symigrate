@@ -5,6 +5,7 @@ from io import StringIO
 from unittest.mock import Mock
 
 from symigrate.main.symigrate import CommandlineParsePhase, InterfaceCreationPhase, MainPhase
+from symigrate.migration import Migration
 from symigrate.repository.executed_migration_repository_statements import DDL_CREATE_MIGRATION_TABLE
 from test.symigrate.helper import dedent_and_remove_white_lines
 
@@ -18,9 +19,16 @@ class InfoCommandAcceptanceTestCase(unittest.TestCase):
         self.database_connection = sqlite3.connect(":memory:")
         self.database_connection.execute(DDL_CREATE_MIGRATION_TABLE)
         self.out_stream = StringIO()
+        self.migration_script_repository_mock = Mock()
+        self.migration_script_repository_mock.find_all = Mock()
+        self.migration_script_repository_mock.find_all.return_value = [
+            Migration(version="1.0.0", description="test migration", checksum="1234", script="", filename=""),
+            Migration(version="1.1.0", description="another migration", checksum="1234", script="", filename=""),
+        ]
         InterfaceCreationPhase.database_connection_hook = self.database_connection
         MainPhase.out_stream_hook = self.out_stream
         MainPhase.migration_script_checker_hook = Mock()
+        MainPhase.migration_script_repository_hook = self.migration_script_repository_mock
 
     def test_info_no_scope(self):
         commandline_parse_phase = CommandlineParsePhase()
@@ -62,8 +70,7 @@ class InfoCommandAcceptanceTestCase(unittest.TestCase):
         self.database_connection.execute(
             "INSERT INTO migration (scope, version, description, status, timestamp, checksum)"
             "VALUES"
-            "('DEFAULT', '1.0.0', 'test migration', 'SUCCESS', '2018-04-29T11:40:00', "
-            "'229175e221c1afad4c436279e1ebc54c')"
+            "('DEFAULT', '1.0.0', 'test migration', 'SUCCESS', '2018-04-29T11:40:00', '1234')"
         )
         self.database_connection.commit()
 
@@ -88,7 +95,7 @@ class InfoCommandAcceptanceTestCase(unittest.TestCase):
         self.database_connection.execute(
             "INSERT INTO migration (scope, version, description, status, timestamp, checksum)"
             "VALUES"
-            "('DEFAULT', '1.0.0', 'test migration', 'SUCCESS', '2018-04-29T11:40:00', '1234')"
+            "('DEFAULT', '1.0.0', 'test migration', 'SUCCESS', '2018-04-29T11:40:00', '4321')"
         )
         self.database_connection.commit()
 

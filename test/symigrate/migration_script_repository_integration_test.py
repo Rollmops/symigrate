@@ -5,7 +5,7 @@ from symigrate.migration_file_matcher import MigrationFileMatcher
 from symigrate.repository.migration_script_repository import MigrationScriptRepository
 
 
-class MigrationRepositoryTestCase(unittest.TestCase):
+class MigrationRepositoryIntegrationTestCase(unittest.TestCase):
 
     def setUp(self):
         test_data_directory_path = os.path.join(os.path.dirname(__file__), "data", "migrations")

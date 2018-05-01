@@ -65,7 +65,7 @@ class InterfaceCreationPhase:
 class MainPhase:
     out_stream_hook = None
     migration_script_checker_hook = None
-    migration_repository_hook = None
+    migration_script_repository_hook = None
 
     def __init__(self, database_connection: sqlite3.Connection, commandline_arguments: Namespace):
         self.commandline_arguments = commandline_arguments
@@ -79,12 +79,14 @@ class MainPhase:
             commandline_arguments.migration_suffix
         )
 
-        self.migration_script_repository = MigrationScriptRepository(
-            commandline_arguments.migration_path,
-            commandline_arguments.scope,
-            commandline_arguments.encoding,
-            migration_file_matcher,
-        )
+        self.migration_script_repository = \
+            MainPhase.migration_script_repository_hook or \
+            MigrationScriptRepository(
+                commandline_arguments.migration_path,
+                commandline_arguments.scope,
+                commandline_arguments.encoding,
+                migration_file_matcher,
+            )
         self.migration_merge_service = MigrationMergeService()
 
     def start(self):
