@@ -1,3 +1,4 @@
+import os
 import sqlite3
 import unittest
 from io import StringIO
@@ -55,7 +56,8 @@ class MigrateCommandAcceptanceTestCase(unittest.TestCase):
     def test_one_pending_migration_success(self):
         self.migration_script_repository_mock.find_all.return_value = [
             Migration(
-                version="1.0.0", description="test migration", checksum="1234", script="", filename="V1.0.0_descr.sh")
+                version="1.0.0", description="test migration", checksum="1234", script="",
+                filename="V1.0.0__description.sh")
         ]
 
         commandline_parse_phase = CommandlineParsePhase()
@@ -64,7 +66,8 @@ class MigrateCommandAcceptanceTestCase(unittest.TestCase):
         with self.assertLogs() as cm:
             commandline_parse_phase.start(args=["--migration-path", "/path", "migrate"])
 
-        self.migration_script_runner_mock.run_migration_script.assert_called_once_with("/path/V1.0.0_descr.sh")
+        expected_path = os.path.join("/path", "V1.0.0__description.sh")
+        self.migration_script_runner_mock.run_migration_script.assert_called_once_with(expected_path)
 
         self.assertIn("INFO:symigrate.command.migrate_command:Found 1 pending migrations", cm.output)
 
@@ -76,7 +79,8 @@ class MigrateCommandAcceptanceTestCase(unittest.TestCase):
     def test_one_pending_migration_failed(self):
         self.migration_script_repository_mock.find_all.return_value = [
             Migration(
-                version="1.0.0", description="test migration", checksum="1234", script="", filename="V1.0.0_descr.sh")
+                version="1.0.0", description="test migration", checksum="1234", script="",
+                filename="V1.0.0__description.sh")
         ]
 
         commandline_parse_phase = CommandlineParsePhase()
@@ -86,7 +90,8 @@ class MigrateCommandAcceptanceTestCase(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 commandline_parse_phase.start(args=["--migration-path", "/path", "migrate"])
 
-        self.migration_script_runner_mock.run_migration_script.assert_called_once_with("/path/V1.0.0_descr.sh")
+        expected_path = os.path.join("/path", "V1.0.0__description.sh")
+        self.migration_script_runner_mock.run_migration_script.assert_called_once_with(expected_path)
 
         self.assertIn("INFO:symigrate.command.migrate_command:Found 1 pending migrations", cm.output)
         self.assertIn(
@@ -117,7 +122,8 @@ class MigrateCommandAcceptanceTestCase(unittest.TestCase):
 
         self.migration_script_repository_mock.find_all.return_value = [
             Migration(
-                version="1.0.0", description="first migration", checksum="1234", script="", filename="V1.0.0_descr.sh"),
+                version="1.0.0", description="first migration", checksum="1234", script="",
+                filename="V1.0.0__description.sh"),
             Migration(
                 version="1.1.0", description="second migration", checksum="2345", script="",
                 filename="V1.1.0_descr.sh"),
