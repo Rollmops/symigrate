@@ -29,9 +29,9 @@ class CommandlineParsePhase:
 
         if commandline_arguments.version:
             print(__version__)
-
-        interface_creation_phase = InterfaceCreationPhase(commandline_arguments)
-        interface_creation_phase.start()
+        else:
+            interface_creation_phase = InterfaceCreationPhase(commandline_arguments)
+            interface_creation_phase.start()
 
 
 class InterfaceCreationPhase:
