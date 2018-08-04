@@ -28,6 +28,7 @@ class CommandlineParserCreatorTestCase(unittest.TestCase):
             
             optional arguments:
               -h, --help            show this help message and exit
+              --version             Print the version information to stdout
               --migration-path MIGRATION_PATH
                                     Migration directory path (default: /path). Environment
                                     variable: SYMIGRATE_MIGRATION_PATH

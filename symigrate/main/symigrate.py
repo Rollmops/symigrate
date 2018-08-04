@@ -4,6 +4,7 @@ import sys
 from argparse import Namespace
 
 from symigrate import SymigrateException
+from symigrate import __version__
 from symigrate.command.diff_command import DiffCommand
 from symigrate.command.info_command import InfoCommand
 from symigrate.command.migrate_command import MigrateCommand
@@ -25,6 +26,9 @@ class CommandlineParsePhase:
 
     def start(self, args):
         commandline_arguments = self.parser.parse_args(args)
+
+        if commandline_arguments.version:
+            print(__version__)
 
         interface_creation_phase = InterfaceCreationPhase(commandline_arguments)
         interface_creation_phase.start()

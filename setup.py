@@ -1,15 +1,13 @@
 from setuptools import setup, find_packages
 
-from symigrate import __version__
-
-DESCRIPTION = """A flyway-like tool that allows migration of scripts to a system."""
+from symigrate import __version__, __description__, __author__, __author_email__
 
 setup(
     name="symigrate",
     version=__version__,
-    description=DESCRIPTION,
-    author="Erik Tuerke",
-    author_email="etuerke@googlemail.com",
+    description=__description__,
+    author=__author__,
+    author_email=__author_email__,
     license="Apache2",
     classifiers=[
         "Intended Audience :: System Administrators",

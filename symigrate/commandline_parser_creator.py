@@ -1,6 +1,7 @@
 import os
 from argparse import ArgumentParser
 
+from symigrate import __description__
 from symigrate.defaults import SYMIGRATE_ENCODING, SYMIGRATE_MIGRATION_SUFFIX, SYMIGRATE_MIGRATION_SEPARATOR, \
     SYMIGRATE_DEFAULT_SCOPE, SYMIGRATE_MIGRATION_PREFIX, SYMIGRATE_LOGGING_LEVEL, SYMIGRATE_MIGRATION_TIMEOUT
 
@@ -9,7 +10,7 @@ class CommandlineParserCreator:
 
     @staticmethod
     def create():
-        parser = ArgumentParser()
+        parser = ArgumentParser(description=__description__)
         CommandlineParserCreator._setup_global_parser(parser)
 
         subparsers = parser.add_subparsers(dest="command")
@@ -34,6 +35,7 @@ class CommandlineParserCreator:
 
     @staticmethod
     def _setup_global_parser(parser):
+        parser.add_argument("--version", help="Print the version information to stdout", action="store_true")
         parser.add_argument(
             "--migration-path",
             help="Migration directory path (default: %(default)s). "
