@@ -54,7 +54,7 @@ class DiffCommandAcceptanceTestCase(unittest.TestCase):
 
         self.assertIn("INFO:symigrate.command.diff_command:No difference found", log.output)
 
-    def test_unknown_version_exception(self):
+    def test_unable_to_find_migration_script(self):
         commandline_parse_phase = CommandlineParsePhase()
 
         with self.assertLogs() as log:
