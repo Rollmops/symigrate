@@ -13,6 +13,12 @@ class DiffCommandAcceptanceTestCase(unittest.TestCase):
     def setUp(self):
         self.database_connection = sqlite3.connect(":memory:")
         self.database_connection.execute(DDL_CREATE_MIGRATION_TABLE)
+        self.database_connection.execute(
+            "INSERT INTO migration (scope, version, description, status, timestamp, checksum, script)"
+            "VALUES"
+            "('DEFAULT', '1.0.0', 'test migration', 'SUCCESS', '2018-04-29T11:40:00', '1234', 'The script')"
+        )
+
         self.out_stream = StringIO()
         self.migration_script_repository_mock = Mock()
         self.migration_script_repository_mock.find_all = Mock()
@@ -27,11 +33,6 @@ class DiffCommandAcceptanceTestCase(unittest.TestCase):
         MainPhase.migration_script_runner_hook = self.migration_script_runner_mock
 
     def test_diff_output(self):
-        self.database_connection.execute(
-            "INSERT INTO migration (scope, version, description, status, timestamp, checksum, script)"
-            "VALUES"
-            "('DEFAULT', '1.0.0', 'test migration', 'SUCCESS', '2018-04-29T11:40:00', '1234', 'The script')"
-        )
         self.migration_script_repository_mock.find_by_version.return_value = \
             Migration(version="1.0.0", description="test migration", checksum="2345", script="", filename="")
 
@@ -43,11 +44,6 @@ class DiffCommandAcceptanceTestCase(unittest.TestCase):
         self.assertEqual("- The script", output[0].getvalue())
 
     def test_diff_no_difference(self):
-        self.database_connection.execute(
-            "INSERT INTO migration (scope, version, description, status, timestamp, checksum, script)"
-            "VALUES"
-            "('DEFAULT', '1.0.0', 'test migration', 'SUCCESS', '2018-04-29T11:40:00', '1234', 'The script')"
-        )
         self.migration_script_repository_mock.find_by_version.return_value = \
             Migration(version="1.0.0", description="test migration", checksum="1234", script="", filename="")
 
@@ -57,3 +53,13 @@ class DiffCommandAcceptanceTestCase(unittest.TestCase):
             commandline_parse_phase.start(args=["diff", "--version", "1.0.0"])
 
         self.assertIn("INFO:symigrate.command.diff_command:No difference found", log.output)
+
+    def test_unknown_version_exception(self):
+        commandline_parse_phase = CommandlineParsePhase()
+
+        with self.assertLogs() as log:
+            commandline_parse_phase.start(args=["diff", "--version", "2.0.0"])
+
+        self.assertIn(
+            "WARNING:symigrate.command.diff_command:Unable to find executed migration for version '2.0.0'", log.output
+        )
