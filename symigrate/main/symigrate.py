@@ -27,7 +27,7 @@ class CommandlineParsePhase:
     def start(self, args):
         commandline_arguments = self.parser.parse_args(args)
 
-        if commandline_arguments.version:
+        if not commandline_arguments.command and commandline_arguments.version:
             print(__version__)
         else:
             interface_creation_phase = InterfaceCreationPhase(commandline_arguments)
