@@ -41,3 +41,19 @@ class DiffCommandAcceptanceTestCase(unittest.TestCase):
             commandline_parse_phase.start(args=["diff", "--version", "1.0.0"])
 
         self.assertEqual("- The script", output[0].getvalue())
+
+    def test_diff_no_difference(self):
+        self.database_connection.execute(
+            "INSERT INTO migration (scope, version, description, status, timestamp, checksum, script)"
+            "VALUES"
+            "('DEFAULT', '1.0.0', 'test migration', 'SUCCESS', '2018-04-29T11:40:00', '1234', 'The script')"
+        )
+        self.migration_script_repository_mock.find_by_version.return_value = \
+            Migration(version="1.0.0", description="test migration", checksum="1234", script="", filename="")
+
+        commandline_parse_phase = CommandlineParsePhase()
+
+        with self.assertLogs() as log:
+            commandline_parse_phase.start(args=["diff", "--version", "1.0.0"])
+
+        self.assertIn("INFO:symigrate.command.diff_command:No difference found", log.output)

@@ -14,9 +14,9 @@ class CommandlineParserCreator:
         CommandlineParserCreator._setup_global_parser(parser)
 
         subparsers = parser.add_subparsers(dest="command")
-        CommandlineParserCreator._setup_diff_parser(subparsers)
         CommandlineParserCreator._setup_info_parser(subparsers)
         CommandlineParserCreator._setup_migrate_parser(subparsers)
+        CommandlineParserCreator._setup_diff_parser(subparsers)
 
         return parser
 
