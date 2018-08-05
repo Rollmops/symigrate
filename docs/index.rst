@@ -1,5 +1,4 @@
 .. image:: https://coveralls.io/repos/github/Rollmops/symigrate/badge.svg?branch=master
-:target: https://coveralls.io/github/Rollmops/symigrate?branch=master
 
 
 Welcome to symigrate's documentation!
