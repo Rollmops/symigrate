@@ -1,4 +1,5 @@
 import logging
+import os
 import subprocess
 from datetime import datetime
 
@@ -19,8 +20,9 @@ class MigrationScriptRunner:
         migration_execution_result = MigrationExecutionResult(
             execution_timestamp=datetime.now()
         )
+        os.environ["SYMIGRATE_RUNNING"] = "true"
         try:
-            process = subprocess.Popen(migration_file_path, shell=True, env={"SYMIGRATE_RUNNING": "true"})
+            process = subprocess.Popen(migration_file_path, shell=True)
             process.wait(self.timeout)
         except Exception as exception:
             LOGGER.error(repr(exception))
