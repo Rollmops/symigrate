@@ -5,4 +5,5 @@ python:
 install:
 - pip install .
 script:
+- pip install -U nose coverage
 - nosetests --with-coverage --cover-package=symigrate/ --cover-xml /test
