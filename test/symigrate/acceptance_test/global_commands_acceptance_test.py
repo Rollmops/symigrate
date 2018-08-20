@@ -11,4 +11,4 @@ class GlobalCommandsAcceptanceTestCase(unittest.TestCase):
         with capture_output() as output:
             command_line_parser_phase.start(["--version"])
 
-        self.assertEqual(f"{__version__}\n", output[0].getvalue())
+        self.assertEqual("{}\n".format(__version__), output[0].getvalue())
