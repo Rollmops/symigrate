@@ -4,7 +4,7 @@
 Welcome to symigrate's documentation!
 =====================================
 
-This is a test.
+This is a test. Miau
 
 .. toctree::
    :maxdepth: 2
