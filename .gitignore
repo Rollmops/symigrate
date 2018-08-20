@@ -7,3 +7,4 @@ __pycache__
 *.db
 _build
 .coverage
+coverage.xml
