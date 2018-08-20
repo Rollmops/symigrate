@@ -6,5 +6,4 @@ install:
 - pip install .
 script:
 - pip install -U nose coverage
-- cd symigrate
-- nosetests --with-coverage --cover-package=symigrate/ --cover-xml /test
+- nosetests --with-coverage --cover-package=symigrate/ --cover-xml test/
